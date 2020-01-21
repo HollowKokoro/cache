@@ -10,6 +10,7 @@ class CacheFile implements CacheInterface
 
     /**
      * Конструктор
+     * @param $path Путь к файлу
      */
     public function __construct(string $path)
     {
@@ -19,7 +20,7 @@ class CacheFile implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, array $value): void
+    public function set(string $key, $value): void
     {
         $data = $this->read();
         $data[$key] = $value;
@@ -29,7 +30,7 @@ class CacheFile implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get(array $key)
+    public function get(string $key)
     {
         $data = $this->read();
         if (array_key_exists($key, $data)) {

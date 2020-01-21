@@ -40,7 +40,7 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */    
-    public function remove(string $key)
+    public function remove(string $key): void
     {
         unset($this->data[$key]);
     }
