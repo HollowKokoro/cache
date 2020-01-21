@@ -4,13 +4,13 @@ declare(strict_types=1);
 class CacheFile implements CacheInterface
 {
     /**
-     * Путь к файлу
+     * @var string $path Путь к файлу
      */
-    public string $path;
+    private string $path;
 
     /**
      * Конструктор
-     * @param $path Путь к файлу
+     * @param string $path Путь к файлу
      */
     public function __construct(string $path)
     {

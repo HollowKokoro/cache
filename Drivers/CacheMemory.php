@@ -4,13 +4,12 @@ declare(strict_types=1);
 class Memory implements CacheInterface
 {
     /**
-     * @param  $data Массив с данными
+     * @var array $data Массив с данными
      */
     private array $data;
 
     /**
      * Конструктор
-     * @param  $data Массив с пользовательскими данными
      */
     public function __construct()
     {
