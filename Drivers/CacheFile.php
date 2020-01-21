@@ -10,8 +10,6 @@ class CacheFile implements CacheInterface
 
     /**
      * Конструктор
-     * @param $path - путь к директории
-     * @return void
      */
     public function __construct(string $path)
     {
@@ -21,7 +19,7 @@ class CacheFile implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value) : void
+    public function set(string $key, array $value): void
     {
         $data = $this->read();
         $data[$key] = $value;
@@ -31,7 +29,7 @@ class CacheFile implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get(array $key)
     {
         $data = $this->read();
         if (array_key_exists($key, $data)) {
@@ -43,7 +41,7 @@ class CacheFile implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function remove($key) : void
+    public function remove($key): void
     {
         $data = $this->read();
         if (array_key_exists($key, $data)) {
@@ -55,7 +53,7 @@ class CacheFile implements CacheInterface
     /**
      * Проверяет файл на существование и получает ансериализованное значение
      */
-    private function read() : array
+    private function read(): array
     {
         if (!is_readable($this->path)) {
             throw new RuntimeException();
@@ -72,9 +70,9 @@ class CacheFile implements CacheInterface
 
     /**
      * Проверяет файл на существование и пишет сериализованное значение
-     * @param  mixed $data - содержит сериализованное значение
+     * @param  mixed $data Содержит сериализованное значение
      */
-    private function write($data) : void
+    private function write($data): void
     {
         if (!is_readable($this->path)) {
             throw new RuntimeException();

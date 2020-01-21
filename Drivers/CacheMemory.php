@@ -4,13 +4,12 @@ declare(strict_types=1);
 class Memory implements CacheInterface
 {
     /**
-     * @param  $data - массив с данными
+     * @param  $data Массив с данными
      */
     private array $data;
 
     /**
      * Конструктор
-     * @param $path - нулевой массив
      */
     public function __construct()
     {
@@ -20,7 +19,7 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set($key, $value): array
     {
         $this->data[$key] = $value;
     }
