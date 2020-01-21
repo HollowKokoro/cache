@@ -41,7 +41,7 @@ class CacheFile implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function remove($key): void
+    public function remove(string $key): void
     {
         $data = $this->read();
         if (array_key_exists($key, $data)) {
@@ -70,7 +70,7 @@ class CacheFile implements CacheInterface
 
     /**
      * Проверяет файл на существование и пишет сериализованное значение
-     * @param  mixed $data Содержит сериализованное значение
+     * @param  mixed $data Содержит значение для записи
      */
     private function write($data): void
     {
@@ -79,9 +79,9 @@ class CacheFile implements CacheInterface
         }
 
         $serialized = serialize($data);
-        $new_data = file_put_contents($this->path, $serialized);
+        $newData = file_put_contents($this->path, $serialized);
         
-        if ($new_data === false) {
+        if ($newData === false) {
             throw new RuntimeException();
         }
     }

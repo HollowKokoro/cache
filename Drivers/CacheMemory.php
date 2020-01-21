@@ -10,6 +10,7 @@ class Memory implements CacheInterface
 
     /**
      * Конструктор
+     * @param  $data Массив с пользовательскими данными
      */
     public function __construct()
     {
@@ -19,7 +20,7 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value): array
+    public function set(string $key, $value): void
     {
         $this->data[$key] = $value;
     }
@@ -27,7 +28,7 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function get(string $key)
     {
         if (array_key_exists($key, $this->data)) {
             return $this->data[$key];
@@ -39,7 +40,7 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */    
-    public function remove($key)
+    public function remove(string $key)
     {
         unset($this->data[$key]);
     }

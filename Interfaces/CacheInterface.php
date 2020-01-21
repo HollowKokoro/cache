@@ -4,22 +4,20 @@ interface CacheInterface
 {
     /**
      * Сохраняет значение по ключу
-     * @param  string $key Имя ключа
      * @param  mixed $value Пользовательские данные
-     * @return 
      */
-    public function set($key, $value): void;
+    public function set(string $key, $value): void;
 
     /**
      * Возвращает значение по ключу или null если не существует значение по ключу
-     * @param  string $key Имя ключа
+     * @param  $key Имя ключа
      * @return mixed
      */
-    public function get($key);
+    public function get(string $key);
     
     /**
      * Удаляет значение по ключу
-     * @param  string $key Имя ключа
+     * @param  $key Имя ключа
      */
-    public function remove($key): void;
+    public function remove(string $key): void;
 }
