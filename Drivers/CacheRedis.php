@@ -1,9 +1,33 @@
 <?php
-declare(strict_types=1);
 
 class CacheRedis implements CacheInterface
 {
     $connection = new Redis();
+
+    public function set(string $key, $value): void
+    {
+        $data = $this->read();
+        $data[$key] = $value;
+        $this->write($data);
+    }
+
+    public function get(string $key)
+    {
+        $data = $this->read();
+        if (array_key_exists($key, $data)) {
+            return $data[$key];
+        }
+        return null;
+    }
+
+    public function remove(string $key): void
+    {
+        $data = $this->read();
+        if (array_key_exists($key, $data)) {
+            unset($data[$key]);
+        }
+        $this->write($data);
+    }
 
     /**
      * Проверяет файл на существование и получает десериализованное значение

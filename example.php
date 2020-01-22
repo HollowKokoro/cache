@@ -1,7 +1,7 @@
  <?php
 
 require_once 'CacheInterface.php';
-require_once 'CacheFile.php';
+require_once 'CacheRedis.php';
 
 $values = new CacheFile('/home/kokoro/1.txt');
 $values->set('test', 'Hello');
