@@ -52,7 +52,8 @@ class CacheFile implements CacheInterface
     }
 
     /**
-     * Проверяет файл на существование и получает ансериализованное значение
+     * Проверяет файл на существование и получает десериализованное значение
+     * @return десериализованный массив
      */
     private function read(): array
     {
@@ -71,9 +72,9 @@ class CacheFile implements CacheInterface
 
     /**
      * Проверяет файл на существование и пишет сериализованное значение
-     * @param  mixed $data Содержит значение для записи
+     * @param  array $data Содержит значение для записи
      */
-    private function write($data): void
+    private function write(array $data): void
     {
         if (!is_readable($this->path)) {
             throw new RuntimeException();
