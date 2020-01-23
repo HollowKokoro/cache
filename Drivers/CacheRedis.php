@@ -4,7 +4,7 @@ declare(strict_types=1);
 class CacheRedis implements CacheInterface
 {
     /**
-     * @var string $connection Соединяет с Redis
+     * @var mixed $connection Соединяет с Redis
      */ 
     private $connection;
 
@@ -14,10 +14,11 @@ class CacheRedis implements CacheInterface
      * @param  int $port
      * @param  string $select
      */
-    public function __construct(string $host, int $port, string $select)
+    public function __construct(string $host, int $port, int $dbNumber)
     {
         $this->connection = new Redis();
-        $this->connection->connect($host, $port, $select);
+        $this->connection->connect($host, $port);
+        $this->connection->select($dbNumber);
     }
 
     /**
