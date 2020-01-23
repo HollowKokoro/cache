@@ -4,15 +4,15 @@ declare(strict_types=1);
 class CacheRedis implements CacheInterface
 {
     /**
-     * @var mixed $connection Соединяет с Redis
-     */ 
+     * @var Redis $connection Соединяет с Redis
+     */
     private $connection;
 
     /**
      * Конструктор
-     * @param  string $host - Имя хоста
-     * @param  int $port - Номер порта
-     * @param  string $select - Номер БД
+     * @param  string $host Имя хоста
+     * @param  int $port Номер порта
+     * @param  int $dbNumber Номер БД
      */
     public function __construct(string $host, int $port, int $dbNumber)
     {
@@ -35,10 +35,11 @@ class CacheRedis implements CacheInterface
      */
     public function get(string $key)
     {
-        if ($this->connection->get($key) === FALSE ) {
+        $getValue = $this->connection->get($key);
+        if ($getValue === false) {
             return null;
         }
-        return unserialize($this->connection->get($key));
+        return unserialize($getValue);
     }
 
     /**
