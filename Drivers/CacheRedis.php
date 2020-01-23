@@ -3,31 +3,49 @@ declare(strict_types=1);
 
 class CacheRedis implements CacheInterface
 {
+    /**
+     * @var string $connection Соединяет с Redis
+     */ 
     private $connection;
 
-    public function __construct($host, $port)
+    /**
+     * Конструктор
+     * @param  string $host
+     * @param  int $port
+     * @param  string $select
+     */
+    public function __construct(string $host, int $port, string $select)
     {
         $this->connection = new Redis();
-        $this->connection->connect($host, $port);
+        $this->connection->connect($host, $port, $select);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
         $this->connection->set($key, $serialized);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get(string $key)
     {
         if (!$this->connection->exists($key)) {
             return null;
-        } else {
-            $unserialized = unserialize($this->connection->get($key));
-            return $unserialized;
         }
+        $unserialized = unserialize($this->connection->get($key));
+        return $unserialized;
     }
+
+    /**
+     * {@inheritdoc}
+     */
     public function remove(string $key): void
     {
-        $delete = unserialize($this->connection->del($key));
+        $this->connection->del($key);
     }
 }
