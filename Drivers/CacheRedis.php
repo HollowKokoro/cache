@@ -7,7 +7,7 @@ class CacheRedis implements CacheInterface
 
     public function __construct($host, $port)
     {
-        $this->connection = new Redis('127.0.0.1', 6379);
+        $this->connection = new Redis($host, $port);
     }
 
     public function set(string $key, $value): void
