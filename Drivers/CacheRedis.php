@@ -5,34 +5,23 @@ class CacheRedis implements CacheInterface
 {
     private $connection;
 
-    public function __construct('127.0.0.1', 6379)
+    public function __construct($host, $port)
     {
-        $this->connection = new Redis();
+        $this->connection = new Redis('127.0.0.1', 6379);
     }
 
     public function set(string $key, $value): void
     {
-        $fileData = file_get_contents($this->connection);
-        $unserialized = @unserialize($fileData);
-        if (!is_array($unserialized)) {
-            $unserialized = [];
-        }
-        $unserialized->$key = $value;
-        $serialized = serialize($unserialized);
-        file_put_contents($this->connection, $serialized);
+        $serialized = serialize($value);
+        $this->connection->set($key, $serialized);
     }
 
     public function get($key)
     {   
-        $file_data = file_get_contents($this->connection);
-        $unserialized = unserialize($file_data);
-        if (array_key_exists($key, $unserialized)) {
-            return $unserialized[$key];
+        if (array_key_exists($key, $this->connection)) {
+            return $this->connection($key);
+        } else {
+            return null;
         }
-        return null;
-    }
-    public function remove(string $key): void
-    {
-        
     }
 }
