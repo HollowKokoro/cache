@@ -7,7 +7,8 @@ class CacheRedis implements CacheInterface
 
     public function __construct($host, $port)
     {
-        $this->connection = new Redis($host, $port);
+        $this->connection = new Redis();
+        $this->connection->connect($host, $port);
     }
 
     public function set(string $key, $value): void
@@ -16,12 +17,9 @@ class CacheRedis implements CacheInterface
         $this->connection->set($key, $serialized);
     }
 
-    public function get($key)
+    public function get(string $key)
     {   
-        if (array_key_exists($key, $this->connection)) {
-            return $this->connection($key);
-        } else {
-            return null;
-        }
+        $unserialized = unserialize($this->connection->get($key));
+        return $unserialized;
     }
 }
