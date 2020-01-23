@@ -18,8 +18,16 @@ class CacheRedis implements CacheInterface
     }
 
     public function get(string $key)
-    {   
-        $unserialized = unserialize($this->connection->get($key));
-        return $unserialized;
+    {
+        if (!$this->connection->exists($key)) {
+            return null;
+        } else {
+            $unserialized = unserialize($this->connection->get($key));
+            return $unserialized;
+        }
+    }
+    public function remove(string $key): void
+    {
+        $delete = unserialize($this->connection->del($key));
     }
 }
