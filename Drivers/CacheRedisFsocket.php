@@ -23,9 +23,9 @@ class CacheRedis implements CacheInterface
      */
     public function set(string $key, $value): void
     {
-        $data = $this->read();
-        $data[$key] = $value;
-        $this->write($data);
+        $serialized = serialize($value);
+        $data = $serialized[$key];
+        fwrite($this->connection, 'connection->set(\'$key\', \'$data\'');
     }
 
     /**
@@ -33,16 +33,13 @@ class CacheRedis implements CacheInterface
      */
     public function get(string $key)
     {
-        $data = $this->read();
-        if (array_key_exists($key, $data)) {
-            return $data[$key];
-        }
-        return null;
+        $unserialized = unserialize($this->connection);
+        fread($unserialized, 100);
     }
 
     /**
      * {@inheritdoc}
-     */
+
     public function remove(string $key): void
     {
         $data = $this->read();
@@ -50,30 +47,5 @@ class CacheRedis implements CacheInterface
             unset($data[$key]);
         }
         $this->write($data);
-    }
-
-    private function read(): array
-    {
-        if (!is_readable($this->connection)) {
-            throw new RuntimeException();
-        }
-
-        $content = fread($this->connection, 100);
-        $unserialized = unserialize($content);
-        return $unserialized;
-    }
-
-    private function write(array $data): void
-    {
-        if (!is_readable($this->connection)) {
-            throw new RuntimeException();
-        }
-
-        $serialized = serialize($data);
-        $newData = fwrite($this->path, $serialized);
-        
-        if ($newData === false) {
-            throw new RuntimeException();
-        }
-    }
+    }     */
 }

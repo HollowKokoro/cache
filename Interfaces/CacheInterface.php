@@ -20,6 +20,6 @@ interface CacheInterface
     /**
      * Удаляет значение по ключу
      * @param string $key Ключ массива
-     */
-    public function remove(string $key): void;
+     
+    public function remove(string $key): void;*/
 }
