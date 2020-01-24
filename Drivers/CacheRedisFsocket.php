@@ -11,10 +11,9 @@ class CacheRedis implements CacheInterface
      * Конструктор
      * @param  string $host Имя хоста
      * @param  int $port Номер порта
-     * @param  int $dbNumber Номер БД
      */
 
-    public function __construct(string $host, int $port, int $dbNumber)
+    public function __construct(string $host, int $port)
     {
         $this->connection = fsockopen($host, $port);
     }
@@ -24,6 +23,7 @@ class CacheRedis implements CacheInterface
      */
     public function set(string $key, $value): void
     {
+        $serialized = serialize($value);
         $this->connection->set($key, $serialized);
     }
 
