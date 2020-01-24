@@ -12,19 +12,20 @@ class CacheRedis implements CacheInterface
      * @param  string $host Имя хоста
      * @param  int $port Номер порта
      */
-
     public function __construct(string $host, int $port)
     {
         $this->connection = fsockopen($host, $port);
+        return $this->connection;
     }
 
-    /**
+   /**
      * {@inheritdoc}
      */
     public function set(string $key, $value): void
     {
-        $serialized = serialize($value);
-        $this->connection->set($key, $serialized);
+        $data = $this->read();
+        $data[$key] = $value;
+        $this->write($data);
     }
 
     /**
@@ -32,11 +33,11 @@ class CacheRedis implements CacheInterface
      */
     public function get(string $key)
     {
-        $getValue = $this->connection->get($key);
-        if ($getValue === false) {
-            return null;
+        $data = $this->read();
+        if (array_key_exists($key, $data)) {
+            return $data[$key];
         }
-        return unserialize($getValue);
+        return null;
     }
 
     /**
@@ -44,6 +45,35 @@ class CacheRedis implements CacheInterface
      */
     public function remove(string $key): void
     {
-        $this->connection->del($key);
+        $data = $this->read();
+        if (array_key_exists($key, $data)) {
+            unset($data[$key]);
+        }
+        $this->write($data);
+    }
+
+    private function read(): array
+    {
+        if (!is_readable($this->connection)) {
+            throw new RuntimeException();
+        }
+
+        $content = fread($this->connection, 100);
+        $unserialized = unserialize($content);
+        return $unserialized;
+    }
+
+    private function write(array $data): void
+    {
+        if (!is_readable($this->connection)) {
+            throw new RuntimeException();
+        }
+
+        $serialized = serialize($data);
+        $newData = fwrite($this->path, $serialized);
+        
+        if ($newData === false) {
+            throw new RuntimeException();
+        }
     }
 }
