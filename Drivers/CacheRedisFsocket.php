@@ -25,7 +25,7 @@ class CacheRedis implements CacheInterface
     {
         $serialized = serialize($value);
         $data = $serialized[$key];
-        fwrite($this->connection, 'connection->set(\'$key\', \'$data\'');
+        fwrite($this->connection, 'set(\'$key\', \'$data\'');
     }
 
     /**
@@ -33,8 +33,8 @@ class CacheRedis implements CacheInterface
      */
     public function get(string $key)
     {
-        $unserialized = unserialize($this->connection);
-        fread($unserialized, 100);
+        fwrite($this->connection, 'get(\'$key\')');
+        
     }
 
     /**
