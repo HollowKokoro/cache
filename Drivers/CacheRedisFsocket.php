@@ -17,7 +17,7 @@ class CacheRedis implements CacheInterface
         $this->connection = fsockopen($host, $port);
     }
 
-   /**
+    /**
      * {@inheritdoc}
      */
     public function set(string $key, $value): void
@@ -33,7 +33,7 @@ class CacheRedis implements CacheInterface
     public function get(string $key)
     {
         $command = sprintf('get %s', $key);
-        unserialize(fwrite($this->connection, $command));
+        fwrite($this->connection, $command);
     }
 
     /**
