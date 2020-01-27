@@ -23,7 +23,7 @@ class CacheRedis implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
-        fwrite($this->connection, 'set\'$key\' \'$serialized\'');
+        fwrite($this->connection, 'set "$key" "$serialized"');
     }
 
     /**
