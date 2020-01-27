@@ -23,17 +23,18 @@ class CacheRedis implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
-        fwrite($this->connection, 'set %s %s');
-        sprintf($this->connection, $key, $serialized);
+        $command = sprintf('set %s %s', $key, $serialized);
+        fwrite($this->connection, $command);
     }
 
     /**
      * {@inheritdoc}
-     
+     */
     public function get(string $key)
     {
-        return unserialize(fwrite($this->connection, 'get \'$key\''));
-    }*/
+        $command = sprintf('get %s', $key);
+        unserialize(fwrite($this->connection, $command));
+    }
 
     /**
      * {@inheritdoc}
@@ -45,5 +46,5 @@ class CacheRedis implements CacheInterface
             unset($data[$key]);
         }
         $this->write($data);
-    }     */
+    }*/
 } 
