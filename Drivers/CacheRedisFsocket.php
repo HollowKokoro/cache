@@ -3,7 +3,7 @@
 class CacheRedis implements CacheInterface
 {
     /**
-     * @var Redis $connection Соединяет с Redis
+     * @var $connection Соединяет с Redis
      */
      private $connection;
 
@@ -15,7 +15,6 @@ class CacheRedis implements CacheInterface
     public function __construct(string $host, int $port)
     {
         $this->connection = fsockopen($host, $port);
-        return $this->connection;
     }
 
    /**
@@ -24,8 +23,12 @@ class CacheRedis implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
+<<<<<<< HEAD
+        fwrite($this->connection, 'set\'$key\' \'$serialized\'');
+=======
         $data = $serialized[$key];
         fwrite($this->connection, 'set(\'$key\', \'$data\'');
+>>>>>>> efffb4e07adac0643f605883468d9f374a1e7991
     }
 
     /**
@@ -33,8 +36,12 @@ class CacheRedis implements CacheInterface
      */
     public function get(string $key)
     {
+<<<<<<< HEAD
+        return unserialize(fwrite($this->connection, 'get \'$key\''));
+=======
         fwrite($this->connection, 'get(\'$key\')');
         
+>>>>>>> efffb4e07adac0643f605883468d9f374a1e7991
     }
 
     /**
