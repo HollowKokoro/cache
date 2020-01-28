@@ -26,6 +26,8 @@ class CacheRedisFsocket implements CacheInterface
         $serialized = serialize($value);
         $command = sprintf('SET %s %s', $key, $serialized);
         fwrite($this->connection, $command);
+        $output = fgets($this->connection);
+        echo $output;
     }
 
     /**
