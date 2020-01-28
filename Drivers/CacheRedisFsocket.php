@@ -1,6 +1,6 @@
 <?php
 
-class CacheRedis implements CacheInterface
+class CacheRedisFsocket implements CacheInterface
 {
     /**
      * @var $connection Соединяет с Redis
@@ -23,7 +23,7 @@ class CacheRedis implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
-        $command = sprintf('set %s %s', $key, $serialized);
+        $command = sprintf("set %s %s", $key, $serialized);
         fwrite($this->connection, $command);
     }
 
@@ -32,7 +32,7 @@ class CacheRedis implements CacheInterface
      */
     public function get(string $key)
     {
-        $command = sprintf('get %s', $key);
+        $command = sprintf("get %s", $key);
         fwrite($this->connection, $command);
     }
 
