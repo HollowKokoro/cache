@@ -27,17 +27,17 @@ class CacheRedisFsocket implements CacheInterface
         $command = sprintf('SET %s %s', $key, $serialized);
         fwrite($this->connection, $command);
         $output = fgets($this->connection);
-        echo $output;
+        var_dump($output);
     }
 
     /**
      * {@inheritdoc}
-     */
+     
     public function get(string $key)
     {
         $command = sprintf('GET %s', $key);
         fwrite($this->connection, $command);
-    }
+    }*/
 
     /**
      * {@inheritdoc}
