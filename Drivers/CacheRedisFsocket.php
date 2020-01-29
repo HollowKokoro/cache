@@ -41,7 +41,6 @@ class CacheRedisFsocket implements CacheInterface
 
     /**
      * {@inheritdoc}
-
     public function remove(string $key): void
     {
         $data = $this->read();
@@ -50,4 +49,8 @@ class CacheRedisFsocket implements CacheInterface
         }
         $this->write($data);
     }*/
+<<<<<<< HEAD
 } 
+=======
+} 
+>>>>>>> 29
