@@ -24,10 +24,10 @@ class CacheRedisFsocket implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
-        $command = sprintf('SET %s %s', $key, $serialized);
+        $command = sprintf("SET %s \"%s\"\n", $key, $serialized);
+        echo $command;
         fwrite($this->connection, $command);
-        $output = fgets($this->connection);
-        var_dump($output);
+        fgets($this->connection, 1024);
     }
 
     /**
