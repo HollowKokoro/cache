@@ -49,8 +49,4 @@ class CacheRedisFsocket implements CacheInterface
         }
         $this->write($data);
     }*/
-<<<<<<< HEAD
 } 
-=======
-} 
->>>>>>> 29
