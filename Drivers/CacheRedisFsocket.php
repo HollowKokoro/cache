@@ -24,13 +24,12 @@ class CacheRedisFsocket implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
-        $needle = "\"";
-        $replace = "\\"";
-        echo str_replace($needle, $replace, $serialized);
+        $needle = "\"s:5:\\\"";
+        $replace = "\\\"";
         $command = sprintf("SET %s \"%s\"\n", $key, $serialized);
+        echo str_replace($needle, $replace, $command);
         fwrite($this->connection, $command);
-        fgets($this->connection, 1024);
-        
+        echo fgets($this->connection, 1024);
     }
 
     /**
