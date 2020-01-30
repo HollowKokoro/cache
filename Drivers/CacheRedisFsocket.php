@@ -24,7 +24,7 @@ class CacheRedisFsocket implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
-        $needle = "\"s:5:\\\"";
+        $needle = "\"";
         $replace = "\\\"";
         $command = sprintf("SET %s \"%s\"\n", $key, $serialized);
         echo str_replace($needle, $replace, $command);
