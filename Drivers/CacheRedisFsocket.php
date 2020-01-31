@@ -24,9 +24,9 @@ class CacheRedisFsocket implements CacheInterface
         fgets($this->connection, 1024);
     }
 
-    public function replace ($value)
+    public function replace($command): string
     {
-        return str_replace("\"Hello\"", "\\\"Hello\\\"", serialize($value));
+        return str_replace("\"", "\\\"", $command);
     }
 
     /**
@@ -34,9 +34,10 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function set(string $key, $value): void
     {
-        
-        echo $command = sprintf("SET %s \"%s\"\n", $key, $this->replace($value));
-        $this->save($command);
+        $serialized = serialize($value);
+        $command = sprintf("SET %s \"%s\"\n", $key, $serialized);
+        $commandNew = $this->replace($command);
+        $this->save($commandNew);
     }
 
     /**
