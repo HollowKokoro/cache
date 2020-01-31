@@ -48,8 +48,8 @@ class CacheRedisFsocket implements CacheInterface
         $serializedNew = $this->replace($serialized);
         $keyNew = $this->replace($key);
         $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);
-        echo $result = $this->save($command);
-        if ($result !== "+OK\n") {
+        $result = $this->save($command);
+        if ($result !== "+OK\r\n") {
             throw new RuntimeException($result);
         }
     }
