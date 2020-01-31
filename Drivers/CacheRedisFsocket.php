@@ -18,12 +18,22 @@ class CacheRedisFsocket implements CacheInterface
         $this->connection = fsockopen($host, $port);
     }
 
-    public function save($command): void
+    /**
+     * save Передаёт значение в Redis и возвращает ответ
+     * @param  mixed $command Значение передаваемое в Redis
+     * @return string Ответ Redis-а
+     */
+    public function save($command): string
     {
         fwrite($this->connection, $command);
-        fgets($this->connection, 1024);
+        return fgets($this->connection, 1024);
     }
 
+    /**
+     * replace Приводит строку к читаемому виду для Redis
+     * @param  mixed $command Пользовательские данные
+     * @return string Конвертированные данные
+     */
     public function replace($command): string
     {
         return str_replace("\"", "\\\"", $command);
@@ -35,9 +45,9 @@ class CacheRedisFsocket implements CacheInterface
     public function set(string $key, $value): void
     {
         $serialized = serialize($value);
-        $command = sprintf("SET %s \"%s\"\n", $key, $serialized);
-        $commandNew = $this->replace($command);
-        $this->save($commandNew);
+        $serializedNew = $this->replace($serialized);
+        $command = sprintf("SET %s \"%s\"\n", $key, $serializedNew);
+        echo $this->save($command);
     }
 
     /**
