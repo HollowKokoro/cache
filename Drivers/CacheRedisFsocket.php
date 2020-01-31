@@ -6,7 +6,7 @@ class CacheRedisFsocket implements CacheInterface
     /**
      * @var $connection Соединяет с Redis
      */
-     private $connection;
+    private $connection;
 
     /**
      * Конструктор
@@ -18,37 +18,42 @@ class CacheRedisFsocket implements CacheInterface
         $this->connection = fsockopen($host, $port);
     }
 
+    public function save($command): void
+    {
+        fwrite($this->connection, $command);
+        fgets($this->connection, 1024);
+    }
+
+    public function replace ($value)
+    {
+        return str_replace("\"Hello\"", "\\\"Hello\\\"", serialize($value));
+    }
+
     /**
      * {@inheritdoc}
      */
     public function set(string $key, $value): void
     {
-        $serialized = serialize($value);
-        $needle = "\"";
-        $replace = "\\\"";
-        $command = sprintf("SET %s \"%s\"\n", $key, $serialized);
-        echo str_replace($needle, $replace, $command);
-        fwrite($this->connection, $command);
-        echo fgets($this->connection, 1024);
+        
+        echo $command = sprintf("SET %s \"%s\"\n", $key, $this->replace($value));
+        $this->save($command);
     }
 
     /**
      * {@inheritdoc}
-     
+     */
     public function get(string $key)
     {
-        $command = sprintf('GET %s', $key);
-        fwrite($this->connection, $command);
-    }*/
+        $command = sprintf("GET %s\n", $key);
+        $this->save($command);
+    }
 
     /**
      * {@inheritdoc}
+     */
     public function remove(string $key): void
     {
-        $data = $this->read();
-        if (array_key_exists($key, $data)) {
-            unset($data[$key]);
-        }
-        $this->write($data);
-    }*/
-} 
+        $command = sprintf("DEL %s\n", $key);
+        $this->save($command);
+    }
+}
