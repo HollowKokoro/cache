@@ -47,7 +47,7 @@ class CacheRedisFsocket implements CacheInterface
         $serialized = serialize($value);
         $serializedNew = $this->replace($serialized);
         $keyNew = $this->replace($key);
-        $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);
+        $command = sprintf("SET %s \"%s\"\n", $keyNew, $serializedNew);
         $result = $this->save($command);
         if ($result !== "+OK\r\n") {
             throw new RuntimeException($result);
@@ -59,8 +59,12 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function get(string $key)
     {
-        $command = sprintf("GET %s\n", $key);
-        $this->save($command);
+        $keyNew = $this->replace($key);
+        $command = sprintf("GET %s\n", $keyNew);
+        $result = $this->save($command);
+        if ($result === "(nil)\r\n") {
+            throw new RuntimeException($result);
+        }
     }
 
     /**
@@ -68,7 +72,11 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function remove(string $key): void
     {
-        $command = sprintf("DEL %s\n", $key);
-        $this->save($command);
+        $keyNew = $this->replace($key);
+        $command = sprintf("DEL %s\n", $keyNew);
+        $result = $this->save($command);
+        if ($result === "(nil)\r\n") {
+            throw new RuntimeException($result);
+        }
     }
 }
