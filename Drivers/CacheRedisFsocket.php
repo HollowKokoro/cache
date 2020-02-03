@@ -65,7 +65,9 @@ class CacheRedisFsocket implements CacheInterface
         if ($result === "$-1\r\n") {
             return null;
         }
-        echo fgets($this->connection, 1024);
+        echo $bites = sprintf("BITCOUNT \"%s\"\n", $keyNew);
+        echo $resultNew = $this->save($bites);
+        //$unserialized = fread($this->connection, $resultNew);
     }
 
     /**
