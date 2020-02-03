@@ -8,18 +8,18 @@ interface CacheInterface
      * @param string $key Ключ массива
      * @param  mixed $value Пользовательские данные
      */
-    public function set(string $key, $value): void;
+    public function set(string $key, $value);
 
     /**
      * Возвращает значение по ключу или null если не существует значение по ключу
      * @param string $key Ключ массива
      * @return mixed Возвращает содержимое массива по ключу
-     
-    public function get(string $key);*/
+     */
+    public function get(string $key);
     
     /**
      * Удаляет значение по ключу
      * @param string $key Ключ массива
-     
-    public function remove(string $key): void;*/
+     */
+    public function remove(string $key): void;
 }

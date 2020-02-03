@@ -23,7 +23,7 @@ class CacheRedisFsocket implements CacheInterface
      * @param  string $command Значение передаваемое в Redis
      * @return string Ответ Redis-а
      */
-    public function save(string $command): string
+    private function save(string $command): string
     {
         fwrite($this->connection, $command);
         return fgets($this->connection, 1024);
@@ -34,7 +34,7 @@ class CacheRedisFsocket implements CacheInterface
      * @param  mixed $command Пользовательские данные
      * @return string Конвертированные данные
      */
-    public function replace($command): string
+    private function replace($command): string
     {
         return str_replace("\"", "\\\"", $command);
     }
@@ -42,15 +42,15 @@ class CacheRedisFsocket implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value): void
+    public function set(string $key, $value)
     {
         $serialized = serialize($value);
         $serializedNew = $this->replace($serialized);
         $keyNew = $this->replace($key);
-        $command = sprintf("SET %s \"%s\"\n", $keyNew, $serializedNew);
+        $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);
         $result = $this->save($command);
         if ($result !== "+OK\r\n") {
-            throw new RuntimeException($result);
+            return null;
         }
     }
 
@@ -60,9 +60,9 @@ class CacheRedisFsocket implements CacheInterface
     public function get(string $key)
     {
         $keyNew = $this->replace($key);
-        $command = sprintf("GET %s\n", $keyNew);
+        $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        if ($result === "(nil)\r\n") {
+        if ($result === "$-1\r\n") {
             throw new RuntimeException($result);
         }
     }
@@ -73,9 +73,9 @@ class CacheRedisFsocket implements CacheInterface
     public function remove(string $key): void
     {
         $keyNew = $this->replace($key);
-        $command = sprintf("DEL %s\n", $keyNew);
+        $command = sprintf("DEL \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        if ($result === "(nil)\r\n") {
+        if ($result === "$-1\r\n") {
             throw new RuntimeException($result);
         }
     }
