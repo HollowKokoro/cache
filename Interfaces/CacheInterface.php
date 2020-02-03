@@ -8,7 +8,7 @@ interface CacheInterface
      * @param string $key Ключ массива
      * @param  mixed $value Пользовательские данные
      */
-    public function set(string $key, $value);
+    public function set(string $key, $value): void;
 
     /**
      * Возвращает значение по ключу или null если не существует значение по ключу

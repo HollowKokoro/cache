@@ -42,7 +42,7 @@ class CacheRedisFsocket implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value)
+    public function set(string $key, $value): void
     {
         $serialized = serialize($value);
         $serializedNew = $this->replace($serialized);
@@ -50,7 +50,7 @@ class CacheRedisFsocket implements CacheInterface
         $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);
         $result = $this->save($command);
         if ($result !== "+OK\r\n") {
-            return null;
+            throw new RuntimeException($result);
         }
     }
 
@@ -63,8 +63,9 @@ class CacheRedisFsocket implements CacheInterface
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
         if ($result === "$-1\r\n") {
-            throw new RuntimeException($result);
+            return null;
         }
+        echo fgets($this->connection, 1024);
     }
 
     /**
