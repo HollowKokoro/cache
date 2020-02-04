@@ -19,27 +19,6 @@ class CacheRedisFsocket implements CacheInterface
     }
 
     /**
-     * save Передаёт значение в Redis и возвращает ответ
-     * @param  string $command Значение передаваемое в Redis
-     * @return string Ответ Redis-а
-     */
-    private function save(string $command): string
-    {
-        fwrite($this->connection, $command);
-        return fgets($this->connection, 1024);
-    }
-
-    /**
-     * replace Приводит строку к читаемому виду для Redis
-     * @param  mixed $command Пользовательские данные
-     * @return string Конвертированные данные
-     */
-    private function replace($command): string
-    {
-        return str_replace("\"", "\\\"", $command);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function set(string $key, $value): void
@@ -62,12 +41,16 @@ class CacheRedisFsocket implements CacheInterface
         $keyNew = $this->replace($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
+        var_dump($result);
+        /*string(5) "$12
+"
+$12
+*/
         if ($result === "$-1\r\n") {
             return null;
         }
-        echo $bites = sprintf("BITCOUNT \"%s\"\n", $keyNew);
-        echo $resultNew = $this->save($bites);
-        //$unserialized = fread($this->connection, $resultNew);
+        echo $result;
+        echo readline($result =1);
     }
 
     /**
@@ -81,5 +64,26 @@ class CacheRedisFsocket implements CacheInterface
         if ($result === "$-1\r\n") {
             throw new RuntimeException($result);
         }
+    }
+
+    /**
+     * save Передаёт значение в Redis и возвращает ответ
+     * @param  string $command Значение передаваемое в Redis
+     * @return string Ответ Redis-а
+     */
+    private function save(string $command): string
+    {
+        fwrite($this->connection, $command);
+        return fgets($this->connection, 1024);
+    }
+
+    /**
+     * replace Приводит строку к читаемому виду для Redis
+     * @param  mixed $command Пользовательские данные
+     * @return string Конвертированные данные
+     */
+    private function replace($command): string
+    {
+        return str_replace("\"", "\\\"", $command);
     }
 }
