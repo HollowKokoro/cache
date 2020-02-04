@@ -49,8 +49,7 @@ $12
         if ($result === "$-1\r\n") {
             return null;
         }
-        echo $result;
-        echo readline($result =1);
+        echo $this->extract_number($result);
     }
 
     /**
@@ -85,5 +84,10 @@ $12
     private function replace($command): string
     {
         return str_replace("\"", "\\\"", $command);
+    }
+
+    private function extract_number (string $redisResult): int
+    {
+        return intval(preg_replace($redisResult, '', '$'));
     }
 }
