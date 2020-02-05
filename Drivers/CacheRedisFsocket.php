@@ -41,15 +41,10 @@ class CacheRedisFsocket implements CacheInterface
         $keyNew = $this->replace($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        var_dump($result);
-        /*string(5) "$12
-"
-$12
-*/
         if ($result === "$-1\r\n") {
             return null;
         }
-        echo $this->extract_number($result);
+        echo fread($this->connection, $this->extract_number($result));
     }
 
     /**
@@ -86,8 +81,8 @@ $12
         return str_replace("\"", "\\\"", $command);
     }
 
-    private function extract_number (string $redisResult): int
+    private function extract_number (string $redisResult)
     {
-        return intval(preg_replace($redisResult, '', '$'));
+        return strval(str_replace(["\d", "$"],"",$redisResult));
     }
 }
