@@ -44,7 +44,7 @@ class CacheRedisFsocket implements CacheInterface
         if ($result === "$-1\r\n") {
             return null;
         }
-        echo fread($this->connection, $this->extract_number($result));
+        fread($this->connection, $this->extract_number($result));
     }
 
     /**
@@ -81,8 +81,13 @@ class CacheRedisFsocket implements CacheInterface
         return str_replace("\"", "\\\"", $command);
     }
 
-    private function extract_number (string $redisResult)
+    /**
+     * extract_number
+     * @param  mixed $redisResult Статус Redis в string
+     * @return int Количество байт в integer
+     */
+    private function extract_number(string $redisResult): int
     {
-        return strval(str_replace(["\d", "$"],"",$redisResult));
+        return (int)$redisResult(str_replace(["$", "\r\n"], "", $redisResult));
     }
 }
