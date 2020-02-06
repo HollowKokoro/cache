@@ -16,7 +16,10 @@ class CacheRedisFsocket implements CacheInterface
     public function __construct(string $host, int $port, int $dbNumber)
     {
         $this->connection = fsockopen($host, $port);
-        $this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
+        $chosenDbNumber=$this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
+        if ($chosenDbNumber === "-ERR DB index is out of range") {
+            throw new RuntimeException("Error");
+        }
     }
 
     /**
@@ -60,7 +63,7 @@ class CacheRedisFsocket implements CacheInterface
         $result = $this->save($command);
         $extracted = $this->extract_number($result);
         if ($extracted === -1) {
-            return;
+            throw new RuntimeException($result);
         }
     }
 
