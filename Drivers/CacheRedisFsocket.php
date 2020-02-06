@@ -16,10 +16,10 @@ class CacheRedisFsocket implements CacheInterface
     public function __construct(string $host, int $port, int $dbNumber)
     {
         $this->connection = fsockopen($host, $port);
-        $chosenDbNumber=$this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
-        $lengh = substr($chosenDbNumber, 0, 4);
-        if ($lengh === "-ERR\r\n") {
-            throw new RuntimeException("Error of index database");
+        $result=$this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
+        $checkError = substr($result, 0, 4);
+        if ($checkError  === "-ERR") {
+            throw new RuntimeException("");
         }
     }
 
