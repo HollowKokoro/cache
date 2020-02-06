@@ -17,7 +17,7 @@ class CacheRedisFsocket implements CacheInterface
     {
         $this->connection = fsockopen($host, $port);
         $chosenDbNumber=$this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
-        $lengh = substr($chosenDbNumber, 0, 3);
+        $lengh = substr($chosenDbNumber, 0, 4);
         if ($lengh === "-ERR\r\n") {
             throw new RuntimeException("Error of index database");
         }
