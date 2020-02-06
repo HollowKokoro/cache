@@ -13,9 +13,10 @@ class CacheRedisFsocket implements CacheInterface
      * @param  string $host Имя хоста
      * @param  int $port Номер порта
      */
-    public function __construct(string $host, int $port)
+    public function __construct(string $host, int $port, int $dbNumber)
     {
         $this->connection = fsockopen($host, $port);
+        $this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
     }
 
     /**
@@ -42,7 +43,7 @@ class CacheRedisFsocket implements CacheInterface
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
         $extracted = $this->extract_number($result);
-        if ($this->$extracted === -1) {
+        if ($extracted === -1) {
             return null;
         }
         $serialized = fread($this->connection, $extracted);
@@ -57,8 +58,9 @@ class CacheRedisFsocket implements CacheInterface
         $keyNew = $this->replace($key);
         $command = sprintf("DEL \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        if ($result === "$-1\r\n") {
-            throw new RuntimeException($result);
+        $extracted = $this->extract_number($result);
+        if ($extracted === -1) {
+            return;
         }
     }
 
