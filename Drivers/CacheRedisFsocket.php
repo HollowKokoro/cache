@@ -41,11 +41,12 @@ class CacheRedisFsocket implements CacheInterface
         $keyNew = $this->replace($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        if ($this->extract_number($result) === -1) {
+        $extracted = $this->extract_number($result);
+        if ($this->$extracted === -1) {
             return null;
         }
-        $serialized = fread($this->connection, $this->extract_number($result));
-        echo unserialize($serialized);
+        $serialized = fread($this->connection, $extracted);
+        return unserialize($serialized);
     }
 
     /**
@@ -87,7 +88,7 @@ class CacheRedisFsocket implements CacheInterface
      * @param  mixed $redisResult Статус Redis в string
      * @return int Количество байт в integer
      */
-    private function extract_number(string $redisResult)
+    private function extract_number(string $redisResult): int
     {
         return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
     }
