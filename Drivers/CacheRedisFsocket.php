@@ -41,11 +41,11 @@ class CacheRedisFsocket implements CacheInterface
         $keyNew = $this->replace($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        if ($result === "$-1\r\n") {
+        if ($this->extract_number($result) === -1) {
             return null;
         }
-        $this->extract_number($result);
-        //fread($this->connection, $this->extract_number($result));
+        $serialized = fread($this->connection, $this->extract_number($result));
+        echo unserialize($serialized);
     }
 
     /**
@@ -59,7 +59,6 @@ class CacheRedisFsocket implements CacheInterface
         if ($result === "$-1\r\n") {
             throw new RuntimeException($result);
         }
-        echo $this->extract_number($result);
     }
 
     /**
@@ -90,6 +89,6 @@ class CacheRedisFsocket implements CacheInterface
      */
     private function extract_number(string $redisResult)
     {
-        return (int)str_replace(["$", "\r\n"], "", $redisResult);
+        return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
     }
 }
