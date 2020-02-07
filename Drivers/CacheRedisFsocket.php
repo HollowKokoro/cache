@@ -12,6 +12,7 @@ class CacheRedisFsocket implements CacheInterface
      * Конструктор
      * @param  string $host Имя хоста
      * @param  int $port Номер порта
+     * @param  int $dbNumber Индекс БД
      */
     public function __construct(string $host, int $port, int $dbNumber)
     {
@@ -19,7 +20,7 @@ class CacheRedisFsocket implements CacheInterface
         $result=$this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
         $checkError = substr($result, 0, 4);
         if ($checkError  === "-ERR") {
-            throw new RuntimeException("");
+            throw new RuntimeException($result);
         }
     }
 
