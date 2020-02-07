@@ -47,7 +47,7 @@ class CacheRedisFsocket implements CacheInterface
         $keyNew = $this->replace($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        $extracted = $this->extract_number($result);
+        $extracted = $this->extractNumber($result);
         if ($extracted === -1) {
             return null;
         }
@@ -63,7 +63,7 @@ class CacheRedisFsocket implements CacheInterface
         $keyNew = $this->replace($key);
         $command = sprintf("DEL \"%s\"\n", $keyNew);
         $result = $this->save($command);
-        $extracted = $this->extract_number($result);
+        $extracted = $this->extractNumber($result);
         if ($extracted === -1) {
             throw new RuntimeException($result);
         }
@@ -95,7 +95,7 @@ class CacheRedisFsocket implements CacheInterface
      * @param  mixed $redisResult Статус Redis в string
      * @return int Количество байт в integer
      */
-    private function extract_number(string $redisResult): int
+    private function extractNumber(string $redisResult): int
     {
         return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
     }
