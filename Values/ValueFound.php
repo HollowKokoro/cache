@@ -7,19 +7,19 @@ class ValueFound implements ValueInterface
 
     public function __construct()
     {
-        
+        $this->data;
     }
 
-    public function isFound($value): bool
+    public function isFound(): bool
     {
-        return isset($this->data, $value);
+        return True;
     }
 
     public function getValue($value)
     {
         if ($this->isFound($value) === True)
         {
-            return "Error. \"$this->data\" = \"$value\".";
+            return $this->data;
         }
     }
 }
