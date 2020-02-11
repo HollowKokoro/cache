@@ -10,7 +10,7 @@ class ValueNotFound implements ValueInterface
 
     public function getValue(): void
     {
-        if ($this->isFound($value) === False)
+        if ($this->isFound() === False)
         {
             return;
         }
