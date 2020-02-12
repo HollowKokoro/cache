@@ -17,9 +17,6 @@ class ValueFound implements ValueInterface
 
     public function getValue()
     {
-        if ($this->isFound() === True)
-        {
-            return $this->data;
-        }
+        return $this->data;
     }
 }
