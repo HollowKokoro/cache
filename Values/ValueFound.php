@@ -5,14 +5,14 @@ class ValueFound implements ValueInterface
 {
     private $data;
 
-    public function __construct()
+    public function __construct($data)
     {
-        $this->data;
+        $this->data = $data;
     }
 
     public function isFound(): bool
     {
-        return True;
+        return true;
     }
 
     public function getValue()

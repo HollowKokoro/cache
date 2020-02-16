@@ -5,11 +5,11 @@ class ValueNotFound implements ValueInterface
 {
     public function isFound(): bool
     {
-        return True;
+        return false;
     }
 
-    public function getValue(): void
+    public function getValue()
     {
-        return;
+        return get_class($this);
     }
 } 
