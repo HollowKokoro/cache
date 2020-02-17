@@ -61,8 +61,6 @@ class CacheRedisFsocket implements CacheInterface
             $found->isFound();
             $found->getValue();
         }
-        
-        return ;
     }
 
     /**
