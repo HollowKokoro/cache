@@ -1,7 +1,5 @@
 <?php
 declare(strict_types=1);
-require_once "/home/kokoro/Cache/Values/ValueNotFound.php";
-require_once "/home/kokoro/Cache/Values/ValueFound.php";
 
 class CacheRedisFsocket implements CacheInterface
 {
@@ -51,15 +49,11 @@ class CacheRedisFsocket implements CacheInterface
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
         if ($extracted === -1) {
-            $notFound = new ValueNotFound();
-            $notFound->isFound();
-            $notFound->getValue();
+            return new ValueNotFound();
         } else {
             $serialized = fread($this->connection, $extracted);
             $data = unserialize($serialized);
-            $found = new ValueFound($data);
-            $found->isFound();
-            $found->getValue();
+            return new ValueFound($data);
         }
     }
 
