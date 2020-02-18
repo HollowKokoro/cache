@@ -9,11 +9,11 @@ require_once "/home/kokoro/Cache/Values/ValueFound.php";
 
 $values = new CacheRedisFsocket("127.0.0.1", 6379, 0);
 $values->set("test", "Hello");
-$values->get("test");
+$x = $values->get("test");
+if (isset($x))
+{
+    $x;
+} else{
+    return null;
+};
 $values->remove("test");
-$value = new ValueNotFound();
-$value->isFound();
-echo $value->getValue();
-$value = new ValueFound('sdsdsd');
-$value->isFound();
-echo $value->getValue();
