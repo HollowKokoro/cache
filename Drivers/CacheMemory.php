@@ -27,12 +27,13 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key)
+    public function get(string $key): ValueInterface
     {
         if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
+            $dataFound = new ValueFound($this->data);
+            return $dataFound[$key];
         } else {
-            return null;
+            return new ValueNotFound();
         }
     }
 

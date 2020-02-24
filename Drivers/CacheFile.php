@@ -30,13 +30,15 @@ class CacheFile implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key)
+    public function get(string $key): ValueInterface
     {
         $data = $this->read();
         if (array_key_exists($key, $data)) {
-            return $data[$key];
+            $dataFound = new ValueFound($data);
+            return $dataFound[$key];
+        } else {
+            return new ValueNotFound();
         }
-        return null;
     }
 
     /**

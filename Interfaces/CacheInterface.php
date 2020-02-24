@@ -15,7 +15,7 @@ interface CacheInterface
      * @param string $key Ключ массива
      * @return scalar or compound Возвращает содержимое массива по ключу
      */
-    public function get(string $key);
+    public function get(string $key): ValueInterface;
     
     /**
      * Удаляет значение по ключу

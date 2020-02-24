@@ -8,7 +8,7 @@ require_once "/home/kokoro/Cache/Values/ValueNotFound.php";
 require_once "/home/kokoro/Cache/Values/ValueFound.php";
 
 $cache = new CacheRedisFsocket("127.0.0.1", 6379, 0);
-$gotten = $cache->get("test");
-if ($gotten->isFound(true)) {
-    echo $gotten->getValue();
+$got = $cache->get("test");
+if ($got->isFound()) {
+    echo $got->getValue();
 };

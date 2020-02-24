@@ -33,13 +33,13 @@ class CacheRedis implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key)
+    public function get(string $key): ValueInterface
     {
         $getValue = $this->connection->get($key);
         if ($getValue === false) {
-            return null;
+            return new ValueNotFound();
         }
-        return unserialize($getValue);
+        return new ValueFound(unserialize($getValue));
     }
 
     /**
