@@ -34,10 +34,7 @@ class CacheFile implements CacheInterface
     {
         $data = $this->read();
         if (array_key_exists($key, $data)) {
-            $dataFound = new ValueFound($data);
-            return $dataFound[$key];
-        } else {
-            return new ValueNotFound();
+            return new ValueFound($data);
         }
     }
 

@@ -30,10 +30,7 @@ class Memory implements CacheInterface
     public function get(string $key): ValueInterface
     {
         if (array_key_exists($key, $this->data)) {
-            $dataFound = new ValueFound($this->data);
-            return $dataFound[$key];
-        } else {
-            return new ValueNotFound();
+            return new ValueFound($this->data);
         }
     }
 

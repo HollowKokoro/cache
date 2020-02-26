@@ -48,12 +48,12 @@ class CacheRedisFsocket implements CacheInterface
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
-        if ($extracted === -1) {
-            return new ValueNotFound();
-        } else {
+        if ($extracted !== -1) {
             $serialized = fread($this->connection, $extracted);
             $data = unserialize($serialized);
             return new ValueFound($data);
+        } else {
+            return new ValueNotFound();
         }
     }
 
@@ -100,5 +100,12 @@ class CacheRedisFsocket implements CacheInterface
     private function extractNumber(string $redisResult): int
     {
         return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
+    }
+
+    private function removeOldRecord(string $key,  string $dataUntilRemove): void
+    {
+        if (date("c")<$dataUntilRemove) {
+            unset($key);
+        }
     }
 }
