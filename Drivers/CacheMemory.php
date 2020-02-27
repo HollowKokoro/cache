@@ -21,7 +21,8 @@ class Memory implements CacheInterface
      */
     public function set(string $key, $value, $ttl): void
     {
-        $this->data[$key, $ttl] = $value;
+        $this->data[$key] = $value;
+        $this->data[$ttl] = $ttl;
     }
     
     /**
@@ -45,9 +46,9 @@ class Memory implements CacheInterface
         unset($this->data[$key]);
     }
 
-    private function expiretion(string $key,  string $tll): void
+    private function expiretion(string $key,  string $ttl): void
     {
-        if (time() < time() + $tll) {
+        if (time() < time() + $this->data[$ttl]) {
             unset($this->data[$key]);
         }
     }
