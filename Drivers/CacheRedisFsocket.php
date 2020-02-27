@@ -42,7 +42,7 @@ class CacheRedisFsocket implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key): ValueInterface
+    public function get(string $key, $ttlSeconds): ValueInterface
     {
         $keyNew = $this->replace($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
@@ -51,6 +51,7 @@ class CacheRedisFsocket implements CacheInterface
         if ($extracted !== -1) {
             $serialized = fread($this->connection, $extracted);
             $data = unserialize($serialized);
+            $this->expire($key, $ttlSeconds);
             return new ValueFound($data);
         } else {
             return new ValueNotFound();
@@ -102,10 +103,15 @@ class CacheRedisFsocket implements CacheInterface
         return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
     }
 
-    private function removeOldRecord(string $key,  string $dataUntilRemove): void
+    private function expire(string $key,  string $ttlSeconds): void
     {
-        if (date("c")<$dataUntilRemove) {
-            unset($key);
+        $keyNew = $this->replace($key);
+        $ttlMilliseconds = $ttlSeconds * 1000;
+        $command = sprintf("EXPIRE \"%s\" \"%b\"\n", $keyNew, $ttlMilliseconds);
+        $result = $this->save($command);
+        $extracted = $this->extractNumber($result);
+        if ($extracted === -1) {
+            throw new RuntimeException($result);
         }
     }
 }
