@@ -51,7 +51,7 @@ class CacheRedisFsocket implements CacheInterface
         if ($extracted !== -1) {
             $serialized = fread($this->connection, $extracted);
             $data = unserialize($serialized);
-            $this->expire($key, $ttlSeconds);
+            $this->expiration($key, $ttlSeconds);
             return new ValueFound($data);
         } else {
             return new ValueNotFound();
@@ -103,7 +103,7 @@ class CacheRedisFsocket implements CacheInterface
         return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
     }
 
-    private function expire(string $key,  string $ttlSeconds): void
+    private function expiration(string $key,  string $ttlSeconds): void
     {
         $keyNew = $this->replace($key);
         $ttlMilliseconds = $ttlSeconds * 1000;

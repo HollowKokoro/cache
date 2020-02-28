@@ -31,7 +31,7 @@ class Memory implements CacheInterface
     public function get(string $key, $ttl): ValueInterface
     {
         if (array_key_exists($key, $this->data)) {
-            $this->expiretion($key, $ttl);
+            $this->expiration($key, $ttl);
             return new ValueFound($this->data);
         } else{
             return new ValueNotFound;
@@ -46,7 +46,7 @@ class Memory implements CacheInterface
         unset($this->data[$key]);
     }
 
-    private function expiretion(string $key,  string $ttl): void
+    private function expiration(string $key,  string $ttl): void
     {
         if (time() < time() + $this->data[$ttl]) {
             unset($this->data[$key]);
