@@ -94,7 +94,7 @@ class CacheRedisFsocket implements CacheInterface
     }
 
     /**
-     * extract_number
+     * extract_number Конвертирует строку в integer
      * @param  mixed $redisResult Статус Redis в string
      * @return int Количество байт в integer
      */
@@ -103,7 +103,12 @@ class CacheRedisFsocket implements CacheInterface
         return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
     }
 
-    private function expiration(string $key,  string $ttlSeconds): void
+    /**
+     * expiration Присвает время жизни ключа
+     * @param string $key Ключ массива
+     * @param int $ttlSeconds Время жизни кюча в секундах
+     */
+    private function expiration(string $key, int $ttlSeconds): void
     {
         $keyNew = $this->replace($key);
         $ttlMilliseconds = $ttlSeconds * 1000;

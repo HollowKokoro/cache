@@ -7,6 +7,7 @@ class Memory implements CacheInterface
      * @var array $data Массив с данными
      */
     private array $data;
+    private array $ttl;
 
     /**
      * Конструктор
@@ -14,24 +15,25 @@ class Memory implements CacheInterface
     public function __construct()
     {
         $this->data = [];
+        $this->ttl = [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value, $ttl): void
+    public function set(string $key, $value, int $expire): void
     {
         $this->data[$key] = $value;
-        $this->data[$ttl] = $ttl;
+        $this->ttl[$key] = $expire;
     }
     
     /**
      * {@inheritdoc}
      */
-    public function get(string $key, $ttl): ValueInterface
+    public function get(string $key): ValueInterface
     {
         if (array_key_exists($key, $this->data)) {
-            $this->expiration($key, $ttl);
+            $this->expiration($key);
             return new ValueFound($this->data);
         } else{
             return new ValueNotFound;
@@ -46,9 +48,15 @@ class Memory implements CacheInterface
         unset($this->data[$key]);
     }
 
-    private function expiration(string $key,  string $ttl): void
+    /**
+     * expiration Присвает время жизни ключа
+     * @param string $key Ключ массива
+     * @param int $ttlSeconds Время жизни кюча в секундах
+     */
+    private function expiration(string $key): void
     {
-        if (time() < time() + $this->data[$ttl]) {
+        $ttlMilliseconds = $this->ttl[$key] * 1000;
+        if (time() < time() + $ttlMilliseconds) {
             unset($this->data[$key]);
         }
     }
