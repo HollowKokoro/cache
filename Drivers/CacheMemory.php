@@ -47,7 +47,7 @@ class Memory implements CacheInterface
         unset($this->data[$key]);
     }
 
-    public function setExpiration(string $key, int $expire)
+        public function setExpiration(string $key, int $expire)
     {
         $this->ttl[$key] = $expire;
     }

@@ -42,7 +42,7 @@ class CacheRedisFsocket implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $key, $ttlSeconds): ValueInterface
+    public function get(string $key): ValueInterface
     {
         $keyNew = $this->replace($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
