@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once '/home/kokoro/Cache/Interfaces/CacheInterface.php';
-require_once '/home/kokoro/Cache/Interfaces/CacheMemory.php';
+require_once '/home/kokoro/Cache/Drivers/CacheMemory.php';
 require_once '/home/kokoro/Cache/Drivers/CacheRedisFsocket.php';
 require_once "/home/kokoro/Cache/Interfaces/ValueInterface.php";
 require_once "/home/kokoro/Cache/Values/ValueNotFound.php";

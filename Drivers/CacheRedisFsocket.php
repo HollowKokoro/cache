@@ -53,9 +53,8 @@ class CacheRedisFsocket implements CacheInterface
             $data = unserialize($serialized);
             $this->expiration($key, $ttlSeconds);
             return new ValueFound($data);
-        } else {
-            return new ValueNotFound();
-        }
+        } 
+        return new ValueNotFound();
     }
 
     /**
