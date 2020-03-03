@@ -6,14 +6,15 @@ interface CacheInterface
     /**
      * Сохраняет значение по ключу
      * @param string $key Ключ массива
-     * @param  scalar or compound $value Пользовательские данные
+     * @param mixed $value Пользовательские данные
+     * @param int $ttl Время жизни кюча в секундах
      */
-    public function set(string $key, $value): void;
+    public function set(string $key, $value, $ttl): void;
 
     /**
      * Возвращает значение по ключу или null если не существует значение по ключу
      * @param string $key Ключ массива
-     * @return scalar or compound Возвращает содержимое массива по ключу
+     * @return mixed Возвращает содержимое массива по ключу
      */
     public function get(string $key): ValueInterface;
     

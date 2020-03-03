@@ -21,9 +21,10 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value): void
+    public function set(string $key, $value, int $expire): void
     {
         $this->data[$key] = $value;
+        $this->ttl[$key] = $expire;
     }
     
     /**
@@ -34,8 +35,11 @@ class Memory implements CacheInterface
         if (!array_key_exists($key, $this->data)) {
             return new ValueNotFound;
         }
-        $this->expiration($key);
-        return new ValueFound($this->data);
+        if (time() > time() + $this->ttl[$key]) {
+            return new ValueFound($this->data[$key]);
+        } else {
+            unset($this->data[$key]);
+        }
     }
 
     /**
@@ -46,21 +50,8 @@ class Memory implements CacheInterface
         unset($this->data[$key]);
     }
 
-        public function setExpiration(string $key, int $expire)
-    {
-        $this->ttl[$key] = $expire;
-    }
-
     /**
      * expiration Присвает время жизни ключа
      * @param string $key Ключ массива
-     * @param int $ttlSeconds Время жизни кюча в секундах
+     * 
      */
-    private function expiration(string $key): void
-    {
-        $ttlMilliseconds = $this->ttl[$key] * 1000;
-        if (time() < time() + $ttlMilliseconds) {
-            unset($this->data[$key]);
-        }
-    }
-}
