@@ -44,14 +44,9 @@ class Memory implements CacheInterface
 
     /**
      * {@inheritdoc}
-     */    
+     */
     public function remove(string $key): void
     {
         unset($this->data[$key]);
     }
-
-    /**
-     * expiration Присвает время жизни ключа
-     * @param string $key Ключ массива
-     * 
-     */
+}
