@@ -31,12 +31,11 @@ class Memory implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        if (array_key_exists($key, $this->data)) {
-            $this->expiration($key);
-            return new ValueFound($this->data);
-        } else {
+        if (!array_key_exists($key, $this->data)) {
             return new ValueNotFound;
         }
+        $this->expiration($key);
+        return new ValueFound($this->data);
     }
 
     /**
