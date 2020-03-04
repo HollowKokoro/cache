@@ -21,7 +21,7 @@ class Memory implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value, int $expire): void
+    public function set(string $key, $value, ?int $expire = null): void
     {
         $this->data[$key] = $value;
         $this->ttl[$key] = $expire;
@@ -33,13 +33,12 @@ class Memory implements CacheInterface
     public function get(string $key): ValueInterface
     {
         if (!array_key_exists($key, $this->data)) {
-            return new ValueNotFound;
+            return new ValueNotFound();
         }
-        if (time() > time() + $this->ttl[$key]) {
+        if (time() > $this->ttl[$key]) {
             return new ValueFound($this->data[$key]);
-        } else {
-            unset($this->data[$key]);
         }
+        $this->remove($key);
     }
 
     /**
