@@ -5,9 +5,12 @@ class CacheMemory implements CacheInterface
 {
     /**
      * @var array $data Массив с данными
-     * @var array $expiration Массив с временем жизни данных
-     */
+    */
     private array $data;
+    
+    /**
+     * @var array $expiration Массив с временем жизни данных
+    */
     private array $expiration;
 
     /**
@@ -30,7 +33,6 @@ class CacheMemory implements CacheInterface
         } else {
             $this->expiration[$key] = INF;
         }
-        
     }
     
     /**
