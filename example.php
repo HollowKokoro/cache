@@ -10,8 +10,5 @@ require_once "/home/kokoro/Cache/Values/ValueFound.php";
 
 //$cache = new CacheRedisFsocket("127.0.0.1", 6379, 0);
 $got = new Memory();
-$got = $cache->set("test", "Hello", 546);
-$got = $cache->get("test", 546);
-if ($got->isFound()) {
-    echo $got->getValue();
-};
+$got->set("test", "Hello", 546);
+print_r($got->get("test", 546));

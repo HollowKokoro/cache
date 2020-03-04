@@ -7,7 +7,7 @@ class Memory implements CacheInterface
      * @var array $data Массив с данными
      */
     private array $data;
-    private array $ttl;
+    private array $expiration;
 
     /**
      * Конструктор
@@ -15,16 +15,16 @@ class Memory implements CacheInterface
     public function __construct()
     {
         $this->data = [];
-        $this->ttl = [];
+        $this->expiration = [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value, ?int $expire = null): void
+    public function set(string $key, $value, ?int $ttl = null): void
     {
         $this->data[$key] = $value;
-        $this->ttl[$key] = $expire;
+        $this->expiration[$key] = time() + $ttl;
     }
     
     /**
@@ -35,10 +35,11 @@ class Memory implements CacheInterface
         if (!array_key_exists($key, $this->data)) {
             return new ValueNotFound();
         }
-        if (time() > $this->ttl[$key]) {
-            return new ValueFound($this->data[$key]);
+        if (time() > $this->expiration[$key]) {
+            $this->remove($key);
+            return new ValueNotFound();
         }
-        $this->remove($key);
+        return new ValueFound($this->data[$key]);
     }
 
     /**
