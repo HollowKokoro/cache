@@ -1,7 +1,7 @@
 <?php 
 declare(strict_types=1);
 
-class Memory implements CacheInterface
+class CacheMemory implements CacheInterface
 {
     /**
      * @var array $data Массив с данными
@@ -25,7 +25,12 @@ class Memory implements CacheInterface
     public function set(string $key, $value, ?int $ttl = null): void
     {
         $this->data[$key] = $value;
-        $this->expiration[$key] = time() + $ttl;
+        if ($ttl !== null) {
+            $this->expiration[$key] = time() + $ttl;
+        } else {
+            $this->expiration[$key] = INF;
+        }
+        
     }
     
     /**

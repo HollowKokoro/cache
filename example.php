@@ -9,6 +9,6 @@ require_once "/home/kokoro/Cache/Values/ValueNotFound.php";
 require_once "/home/kokoro/Cache/Values/ValueFound.php";
 
 //$cache = new CacheRedisFsocket("127.0.0.1", 6379, 0);
-$got = new Memory();
-$got->set("test", "Hello", 546);
-print_r($got->get("test", 546));
+$cache = new CacheMemory();
+$cache->set("test", "Hello", 546);
+print_r($cache->get("test"));
