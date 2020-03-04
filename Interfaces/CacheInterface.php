@@ -7,7 +7,7 @@ interface CacheInterface
      * Сохраняет значение по ключу
      * @param string $key Ключ массива
      * @param mixed $value Пользовательские данные
-     * @param int $ttl Время жизни кюча в секундах
+     * @param int|null $ttl Время жизни ключа в секундах
      */
     public function set(string $key, $value, ?int $ttl = null): void;
 

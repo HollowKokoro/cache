@@ -5,6 +5,7 @@ class Memory implements CacheInterface
 {
     /**
      * @var array $data Массив с данными
+     * @var array $expiration Массив с временем жизни данных
      */
     private array $data;
     private array $expiration;
