@@ -10,7 +10,6 @@ class CacheFile implements CacheInterface
 
     /**
      * Конструктор
-     * @param string $path Путь к файлу
      */
     public function __construct(string $path)
     {
@@ -30,7 +29,7 @@ class CacheFile implements CacheInterface
         } else {
             $this->expiration[$key] = INF;
         }
-        $this->write($data);
+        $this->write($data, $this->expiration);
     }
 
     /**
@@ -89,8 +88,8 @@ class CacheFile implements CacheInterface
         if (!is_readable($this->path)) {
             throw new RuntimeException();
         }
-
-        $serialized = serialize($data);
+        $allData = [$data, $this->expiration];
+        $serialized = serialize($allData);
         $newData = file_put_contents($this->path, $serialized);
         
         if ($newData === false) {

@@ -9,6 +9,6 @@ require_once "./Values/ValueNotFound.php";
 require_once "./Values/ValueFound.php";
 
 //$cache = new CacheRedisFsocket("127.0.0.1", 6379, 0);
-$cache = new CacheFile();
-$cache->set("test", "Hello", 546);
+$cache = new CacheFile("./1.txt");
+$cache->set("test", "Hello", null);
 print_r($cache->get("test"));
