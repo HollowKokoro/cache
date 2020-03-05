@@ -15,15 +15,21 @@ class CacheFile implements CacheInterface
     public function __construct(string $path)
     {
         $this->path = $path;
+        $this->expiration = [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value): void
+    public function set(string $key, $value, ?int $ttl = null): void
     {
         $data = $this->read();
         $data[$key] = $value;
+        if ($ttl !== null) {
+            $this->expiration[$key] = $ttl;
+        } else {
+            $this->expiration[$key] = INF;
+        }
         $this->write($data);
     }
 
@@ -33,10 +39,14 @@ class CacheFile implements CacheInterface
     public function get(string $key): ValueInterface
     {
         $data = $this->read();
-        if (array_key_exists($key, $data)) {
-            return new ValueFound($data);
+        if (!array_key_exists($key, $data)) {
+            return new ValueNotFound; 
         }
-        return new ValueNotFound;
+        if (time() - filemtime($this->path) > $this->expiration[$key]) {
+            $this->remove($key);
+            return new ValueNotFound;
+        }  
+        return new ValueFound($data);
     }
 
     /**
