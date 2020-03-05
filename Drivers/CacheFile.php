@@ -8,6 +8,10 @@ class CacheFile implements CacheInterface
      */
     private string $path;
 
+    public array $expiration;
+
+    public int $timeOfCreation;
+
     /**
      * Конструктор
      */
@@ -25,7 +29,7 @@ class CacheFile implements CacheInterface
         $data = $this->read();
         $data[$key] = $value;
         if ($ttl !== null) {
-            $this->expiration[$key] = $ttl;
+            $this->expiration[$key] = time() + $ttl;
         } else {
             $this->expiration[$key] = INF;
         }
@@ -41,9 +45,9 @@ class CacheFile implements CacheInterface
         if (!array_key_exists($key, $data)) {
             return new ValueNotFound; 
         }
-        if (time() - filemtime($this->path) > $this->expiration[$key]) {
+        if (time() > $this->expiration[$key]) {
             $this->remove($key);
-            return new ValueNotFound;
+            return new ValueNotFound();
         }  
         return new ValueFound($data[$key]);
     }
