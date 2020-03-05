@@ -36,6 +36,7 @@ class CacheFile implements CacheInterface
         if (array_key_exists($key, $data)) {
             return new ValueFound($data);
         }
+        return new ValueNotFound;
     }
 
     /**
