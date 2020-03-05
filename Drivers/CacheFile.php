@@ -10,8 +10,6 @@ class CacheFile implements CacheInterface
 
     public array $expiration;
 
-    public int $timeOfCreation;
-
     /**
      * Конструктор
      */
