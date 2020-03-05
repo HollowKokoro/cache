@@ -39,7 +39,7 @@ class CacheFile implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        $data = $this->read();
+        print_r($data = $this->read());
         if (!array_key_exists($key, $data)) {
             return new ValueNotFound; 
         }
