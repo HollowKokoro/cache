@@ -46,7 +46,7 @@ class CacheFile implements CacheInterface
             $this->remove($key);
             return new ValueNotFound;
         }  
-        return new ValueFound($data);
+        return new ValueFound($data[$key]);
     }
 
     /**
