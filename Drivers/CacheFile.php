@@ -38,11 +38,12 @@ class CacheFile implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
+        $ttlKey = $key. $key;
         $data = $this->read();
-        if (!array_key_exists($key, $data)) {
+        if ($this->key_exists($key) === false) {
             return new ValueNotFound(); 
         }
-        if (time() > $data[$key. $key]) {
+        if (time() > $data[$ttlKey]) {
             $this->remove($key);
             return new ValueNotFound();
         } 
@@ -54,10 +55,12 @@ class CacheFile implements CacheInterface
      */
     public function remove(string $key): void
     {
+        $ttlKey = $key. $key;
         $data = $this->read();
-        if (array_key_exists($key, $data)) {
+        if ($this->key_exists($key) === true) {
             unset($data[$key]);
         }
+        unset($data[$ttlKey]);
         $this->write($data);
     }
 
@@ -95,5 +98,16 @@ class CacheFile implements CacheInterface
         if ($newData === false) {
             throw new RuntimeException();
         }
+    }
+
+    /**
+     * Проверяет пользовательский ключ на существование в массиве
+     * @param  string $key Пользовательский ключ
+     * @return boolean true - существует | false - не существует
+     */
+    private function key_exists (string $key) {
+        $data = $this->read();
+        array_key_exists($key, $data);
+        return;
     }
 }

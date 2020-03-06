@@ -12,3 +12,4 @@ require_once "./Values/ValueFound.php";
 $cache = new CacheFile("./1.txt");
 $cache->set("test", "Hello", 453);
 print_r($cache->get("test"));
+$cache->remove("test");
