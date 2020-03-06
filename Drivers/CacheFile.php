@@ -43,7 +43,6 @@ class CacheFile implements CacheInterface
         if (!array_key_exists($key, $data)) {
             return new ValueNotFound; 
         }
-        $ttlKey = $key. $key;
         if (time() > $data[$ttlKey]) {
             $this->remove($key);
             return new ValueNotFound();
