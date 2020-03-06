@@ -24,7 +24,6 @@ class CacheFile implements CacheInterface
         $data = $this->read();
         $data[$key] = $value;
         $ttlKey = $key. $key;
-        $data[$ttlKey] = [];
 
         if ($ttl !== null) {
             $data[$ttlKey] = time() + $ttl;
@@ -39,11 +38,11 @@ class CacheFile implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        print_r($data = $this->read());
+        $data = $this->read();
         if (!array_key_exists($key, $data)) {
-            return new ValueNotFound; 
+            return new ValueNotFound(); 
         }
-        if (time() > $data[$ttlKey]) {
+        if (time() > $data[$key. $key]) {
             $this->remove($key);
             return new ValueNotFound();
         } 
