@@ -23,7 +23,7 @@ class CacheFile implements CacheInterface
     {
         $data = $this->read();
         $data[$key] = $value;
-        $ttlKey = $key. $key;
+        $ttlKey = $this->keyForTtl($key);
 
         if ($ttl !== null) {
             $data[$ttlKey] = time() + $ttl;
@@ -38,9 +38,10 @@ class CacheFile implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        $ttlKey = $key. $key;
+        $ttlKey = $this->keyForTtl($key);
+
         $data = $this->read();
-        if ($this->key_exists($key) === false) {
+        if (!array_key_exists($key, $data)) {
             return new ValueNotFound(); 
         }
         if (time() > $data[$ttlKey]) {
@@ -55,12 +56,11 @@ class CacheFile implements CacheInterface
      */
     public function remove(string $key): void
     {
-        $ttlKey = $key. $key;
+        $ttlKey = $this->keyForTtl($key);
         $data = $this->read();
-        if ($this->key_exists($key) === true) {
-            unset($data[$key]);
+        if (array_key_exists($key, $data)) {
+            unset($data[$key], $data[$ttlKey]);
         }
-        unset($data[$ttlKey]);
         $this->write($data);
     }
 
@@ -101,13 +101,12 @@ class CacheFile implements CacheInterface
     }
 
     /**
-     * Проверяет пользовательский ключ на существование в массиве
-     * @param  string $key Пользовательский ключ
-     * @return boolean true - существует | false - не существует
+     * Создаёт ключ для ttl
+     * @param  $key Ключ $data
+     * @return Ключ для ttl
      */
-    private function key_exists (string $key) {
-        $data = $this->read();
-        array_key_exists($key, $data);
-        return;
+    private function keyForTtl (string $key): string
+    {
+        return $key. $key;
     }
 }
