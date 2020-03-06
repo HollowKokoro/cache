@@ -8,15 +8,12 @@ class CacheFile implements CacheInterface
      */
     private string $path;
 
-    public array $expiration;
-
     /**
      * Конструктор
      */
     public function __construct(string $path)
     {
         $this->path = $path;
-        $this->expiration = [];
     }
 
     /**
@@ -26,12 +23,15 @@ class CacheFile implements CacheInterface
     {
         $data = $this->read();
         $data[$key] = $value;
+        $ttlKey = $key. $key;
+        $data[$ttlKey] = [];
+
         if ($ttl !== null) {
-            $this->expiration[$key] = time() + $ttl;
+            $data[$ttlKey] = time() + $ttl;
         } else {
-            $this->expiration[$key] = INF;
+            $data[$ttlKey] = INF;
         }
-        $this->write($data, $this->expiration);
+        $this->write($data);
     }
 
     /**
@@ -43,10 +43,11 @@ class CacheFile implements CacheInterface
         if (!array_key_exists($key, $data)) {
             return new ValueNotFound; 
         }
-        if (time() > $this->expiration[$key]) {
+        $ttlKey = $key. $key;
+        if (time() > $data[$ttlKey]) {
             $this->remove($key);
             return new ValueNotFound();
-        }  
+        } 
         return new ValueFound($data[$key]);
     }
 
@@ -90,8 +91,7 @@ class CacheFile implements CacheInterface
         if (!is_readable($this->path)) {
             throw new RuntimeException();
         }
-        $allData = [$data, $this->expiration];
-        $serialized = serialize($allData);
+        $serialized = serialize($data);
         $newData = file_put_contents($this->path, $serialized);
         
         if ($newData === false) {
