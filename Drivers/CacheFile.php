@@ -51,9 +51,10 @@ class CacheFile implements CacheInterface
     public function remove(string $key): void
     {
         $data = $this->read();
-        if (array_key_exists("value", $data[$key])) {
-            unset($data[$key]);
+        if (!array_key_exists($key, $data)) {
+            return;
         }
+        unset($data[$key]);
         $this->write($data);
     }
 
