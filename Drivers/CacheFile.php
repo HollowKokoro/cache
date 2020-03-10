@@ -23,10 +23,9 @@ class CacheFile implements CacheInterface
     {
         $data = $this->read();
         $ttlKey = $this->keyForTtl($key);
-        $ttlKey = ($ttl !== null) ? time() + $ttl : INF;
         $data[$key] = [
             'value' => $value,
-            'ttl' =>  $ttlKey,
+            'ttl' =>  $ttlKey = ($ttl !== null) ? time() + $ttl : INF,
         ];
         
         $this->write($data);
