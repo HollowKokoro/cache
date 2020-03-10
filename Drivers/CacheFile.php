@@ -21,6 +21,9 @@ class CacheFile implements CacheInterface
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
+            if ($ttl <= 0) {
+                return;
+            }
         $data = $this->read();
         $data[$key] = [
             'value' => $value,

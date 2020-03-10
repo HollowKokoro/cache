@@ -29,17 +29,23 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
+        if ($ttl <= 0) {
+            return;
+        }
+        if ($ttl === null) {
+            return;
+        }
         $serialized = serialize($value);
         $serializedNew = $this->replace($serialized);
         $keyNew = $this->replace($key);
-        $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);
-        $commandTtl = sprintf("EXPIRE \"%s\" \"%s\"\n", $keyNew, $ttl);
-        $result = $this->save($command);
-        $resultTtl = $this->save($commandTtl);
+        $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);  
+        $result = $this->save($command);    
         if ($result !== "+OK\r\n") {
             throw new RuntimeException($result);
         }
-        if ($result !== "(integer) 1\r\n") {
+        $commandTtl = sprintf("EXPIRE \"%s\" %d\n", $keyNew, $ttl);
+        $resultTtl = $this->save($commandTtl);
+        if ($resultTtl !== ":1\r\n") {
             throw new RuntimeException($resultTtl);
         }
     }
@@ -56,7 +62,6 @@ class CacheRedisFsocket implements CacheInterface
         if ($extracted !== -1) {
             $serialized = fread($this->connection, $extracted);
             $data = unserialize($serialized);
-            $this->expiration($key, $ttlSeconds);
             return new ValueFound($data);
         }
         return new ValueNotFound();
@@ -112,15 +117,8 @@ class CacheRedisFsocket implements CacheInterface
      * @param string $key Ключ массива
      * @param int $ttlSeconds Время жизни кюча в секундах
      */
-    private function expiration(string $key, int $ttlSeconds): void
+    private function expiration(string $key, $ttl): void
     {
-        $keyNew = $this->replace($key);
-        $ttlMilliseconds = $ttlSeconds * 1000;
-        $command = sprintf("EXPIRE \"%s\" \"%b\"\n", $keyNew, $ttlMilliseconds);
-        $result = $this->save($command);
-        $extracted = $this->extractNumber($result);
-        if ($extracted === -1) {
-            throw new RuntimeException($result);
-        }
+
     }
 }

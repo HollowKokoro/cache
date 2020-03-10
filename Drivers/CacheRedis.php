@@ -26,6 +26,9 @@ class CacheRedis implements CacheInterface
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
+            if ($ttl <= 0) {
+                return;
+            }
         $serialized = serialize($value);
         $this->connection->set($key, $serialized);
         $this->connection->expire($key, $ttl);
