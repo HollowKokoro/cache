@@ -23,16 +23,12 @@ class CacheFile implements CacheInterface
     {
         $data = $this->read();
         $ttlKey = $this->keyForTtl($key);
+        $ttlKey = ($ttl !== null) ? time() + $ttl : INF;
         $data[$key] = [
             'value' => $value,
             'ttl' =>  $ttlKey,
         ];
-
-        if ($ttl !== null) {
-            $data[$ttlKey] = time() + $ttl;
-        } else {
-            $data[$ttlKey] = INF;
-        }
+        
         $this->write($data);
     }
 
@@ -45,12 +41,12 @@ class CacheFile implements CacheInterface
 
         $data = $this->read();
         if (!array_key_exists($key, $data)) {
-            return new ValueNotFound();
+            return new ValueNotFound(); 
         }
-        if (time() > $data[$ttlKey]) {
+        if (time() > $data[$key]["ttl"]) {
             $this->remove($key);
             return new ValueNotFound();
-        }
+        } 
         return new ValueFound($data[$key]);
     }
 
@@ -108,7 +104,7 @@ class CacheFile implements CacheInterface
      * @param  $key Ключ $data
      * @return Ключ для ttl
      */
-    private function keyForTtl(string $key): string
+    private function keyForTtl (string $key): string
     {
         return $key. $key;
     }
