@@ -24,10 +24,11 @@ class CacheRedis implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value): void
+    public function set(string $key, $value, ?int $ttl = null): void
     {
         $serialized = serialize($value);
         $this->connection->set($key, $serialized);
+        $this->connection->expire($key, $ttl);
     }
 
     /**
@@ -39,6 +40,7 @@ class CacheRedis implements CacheInterface
         if ($getValue === false) {
             return new ValueNotFound();
         }
+        $this->connection->ttl($key);
         return new ValueFound(unserialize($getValue));
     }
 
