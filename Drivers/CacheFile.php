@@ -22,12 +22,10 @@ class CacheFile implements CacheInterface
     public function set(string $key, $value, ?int $ttl = null): void
     {
         $data = $this->read();
-        $ttlKey = $this->keyForTtl($key);
         $data[$key] = [
             'value' => $value,
-            'ttl' =>  $ttlKey = ($ttl !== null) ? time() + $ttl : INF,
+            'ttl' => ($ttl !== null) ? time() + $ttl : INF,
         ];
-        
         $this->write($data);
     }
 
@@ -36,17 +34,15 @@ class CacheFile implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        $ttlKey = $this->keyForTtl($key);
-
         $data = $this->read();
-        if (!array_key_exists($key, $data)) {
+        if (!array_key_exists("value", $data[$key])) {
             return new ValueNotFound(); 
         }
         if (time() > $data[$key]["ttl"]) {
             $this->remove($key);
             return new ValueNotFound();
         } 
-        return new ValueFound($data[$key]);
+        return new ValueFound($data[$key]["value"]);
     }
 
     /**
@@ -54,10 +50,9 @@ class CacheFile implements CacheInterface
      */
     public function remove(string $key): void
     {
-        $ttlKey = $this->keyForTtl($key);
         $data = $this->read();
-        if (array_key_exists($key, $data)) {
-            unset($data[$key], $data[$ttlKey]);
+        if (array_key_exists("value", $data[$key])) {
+            unset($data[$key]);
         }
         $this->write($data);
     }
@@ -96,15 +91,5 @@ class CacheFile implements CacheInterface
         if ($newData === false) {
             throw new RuntimeException();
         }
-    }
-
-    /**
-     * Создаёт ключ для ttl
-     * @param  $key Ключ $data
-     * @return Ключ для ttl
-     */
-    private function keyForTtl (string $key): string
-    {
-        return $key. $key;
     }
 }
