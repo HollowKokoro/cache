@@ -17,9 +17,9 @@ class CacheRedisFsocket implements CacheInterface
     public function __construct(string $host, int $port, int $dbNumber)
     {
         $this->connection = fsockopen($host, $port);
-        $result=$this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
+        $result = $this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
         $checkError = substr($result, 0, 4);
-        if ($checkError  === "-ERR") {
+        if ($checkError === "-ERR") {
             throw new RuntimeException($result);
         }
     }
@@ -27,15 +27,20 @@ class CacheRedisFsocket implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $key, $value): void
+    public function set(string $key, $value, ?int $ttl = null): void
     {
         $serialized = serialize($value);
         $serializedNew = $this->replace($serialized);
         $keyNew = $this->replace($key);
         $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);
+        $commandTtl = sprintf("EXPIRE \"%s\" \"%s\"\n", $keyNew, $ttl);
         $result = $this->save($command);
+        $resultTtl = $this->save($commandTtl);
         if ($result !== "+OK\r\n") {
             throw new RuntimeException($result);
+        }
+        if ($result !== "(integer) 1\r\n") {
+            throw new RuntimeException($resultTtl);
         }
     }
 
@@ -53,7 +58,7 @@ class CacheRedisFsocket implements CacheInterface
             $data = unserialize($serialized);
             $this->expiration($key, $ttlSeconds);
             return new ValueFound($data);
-        } 
+        }
         return new ValueNotFound();
     }
 
