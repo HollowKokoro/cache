@@ -21,9 +21,9 @@ class CacheFile implements CacheInterface
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
-            if ($ttl <= 0) {
-                return;
-            }
+        if ($ttl <= 0) {
+            throw new RuntimeException("Expcted non-negative integer");
+        }
         $data = $this->read();
         $data[$key] = [
             'value' => $value,

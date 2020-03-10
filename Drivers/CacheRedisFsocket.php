@@ -30,10 +30,7 @@ class CacheRedisFsocket implements CacheInterface
     public function set(string $key, $value, ?int $ttl = null): void
     {
         if ($ttl <= 0) {
-            return;
-        }
-        if ($ttl === null) {
-            return;
+            throw new RuntimeException("Expcted non-negative integer");
         }
         $serialized = serialize($value);
         $serializedNew = $this->replace($serialized);
@@ -41,6 +38,9 @@ class CacheRedisFsocket implements CacheInterface
         $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);  
         $result = $this->save($command);    
         if ($result !== "+OK\r\n") {
+            throw new RuntimeException($result);
+        }
+        if ($ttl === null) {
             throw new RuntimeException($result);
         }
         $commandTtl = sprintf("EXPIRE \"%s\" %d\n", $keyNew, $ttl);
