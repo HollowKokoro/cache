@@ -40,7 +40,6 @@ class CacheRedis implements CacheInterface
         if ($getValue === false) {
             return new ValueNotFound();
         }
-        $this->connection->ttl($key);
         return new ValueFound(unserialize($getValue));
     }
 
