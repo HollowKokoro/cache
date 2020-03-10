@@ -22,8 +22,11 @@ class CacheFile implements CacheInterface
     public function set(string $key, $value, ?int $ttl = null): void
     {
         $data = $this->read();
-        $data[$key] = $value;
         $ttlKey = $this->keyForTtl($key);
+        $data[$key] = [
+            'value' => $value,
+            'ttl' =>  $ttlKey,
+        ];
 
         if ($ttl !== null) {
             $data[$ttlKey] = time() + $ttl;
@@ -42,12 +45,12 @@ class CacheFile implements CacheInterface
 
         $data = $this->read();
         if (!array_key_exists($key, $data)) {
-            return new ValueNotFound(); 
+            return new ValueNotFound();
         }
         if (time() > $data[$ttlKey]) {
             $this->remove($key);
             return new ValueNotFound();
-        } 
+        }
         return new ValueFound($data[$key]);
     }
 
@@ -105,7 +108,7 @@ class CacheFile implements CacheInterface
      * @param  $key Ключ $data
      * @return Ключ для ttl
      */
-    private function keyForTtl (string $key): string
+    private function keyForTtl(string $key): string
     {
         return $key. $key;
     }
