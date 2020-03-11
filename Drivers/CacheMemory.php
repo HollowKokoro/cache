@@ -28,9 +28,11 @@ class CacheMemory implements CacheInterface
     public function set(string $key, $value, ?int $ttl = null): void
     {
         $this->data[$key] = $value;
+        
         if ($ttl <= 0 || $ttl === null) {
             throw new RuntimeException("Expected non-negative integer");
         }
+
         if ($ttl !== null) {
             $this->expiration[$key] = time() + $ttl;
         } else {

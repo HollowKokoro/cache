@@ -32,17 +32,22 @@ class CacheRedisFsocket implements CacheInterface
         if ($ttl <= 0 || $ttl === null) {
             throw new RuntimeException("Expected non-negative integer");
         }
+
         $keyNew = $this->correctView($key);
         $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $this->correctView(serialize($value)));
         $result = $this->save($command);
+
         if ($result !== "+OK\r\n") {
             throw new RuntimeException($result);
         }
+
         if ($ttl === null) {
             return;
         }
+        
         $commandTtl = sprintf("EXPIRE \"%s\" %d\n", $keyNew, $ttl);
         $resultTtl = $this->save($commandTtl);
+        
         if ($resultTtl !== ":1\r\n") {
             throw new RuntimeException($resultTtl);
         }

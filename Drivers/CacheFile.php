@@ -24,11 +24,13 @@ class CacheFile implements CacheInterface
         if ($ttl <= 0 || $ttl === null) {
             throw new RuntimeException("Expected non-negative integer");
         }
+
         $data = $this->read();
         $data[$key] = [
             'value' => $value,
             'ttl' => ($ttl !== null) ? time() + $ttl : INF,
         ];
+        
         $this->write($data);
     }
 
