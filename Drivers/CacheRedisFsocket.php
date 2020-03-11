@@ -13,11 +13,13 @@ class CacheRedisFsocket implements CacheInterface
      * @param  string $host Имя хоста
      * @param  int $port Номер порта
      * @param  int $dbNumber Индекс БД
+     * @throws RuntimeException если $dbNumber больше, чем максимальное число БД Redis, которое = 16
+     * @throws RuntimeException если получает ответ от Redis "-ERR", при подключении к выбранному номеру БД Redis
      */
     public function __construct(string $host, int $port, int $dbNumber)
     {
         if ($dbNumber > 16) {
-            throw new RuntimeException("Максимальное число баз данных Redis 16. $dbNumber должно быть меньше 16")
+            throw new RuntimeException("Максимальное число баз данных Redis 16. $dbNumber должно быть меньше 16");
         }
         $this->connection = fsockopen($host, $port);
         
@@ -31,6 +33,9 @@ class CacheRedisFsocket implements CacheInterface
 
     /**
      * {@inheritdoc}
+     * @throws RuntimeException если пользователт передаёт $ttl, который не равен null и меньше или равен 0
+     * @throws RuntimeException если получает ответ от Redis отличный от "+OK", что означает, произошла ошибка операции SET
+     * @throws RuntimeException если получает ответ от Redis отличный от ":1", что означает произошла ощибка операции EXPIRE
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
@@ -78,6 +83,7 @@ class CacheRedisFsocket implements CacheInterface
 
     /**
      * {@inheritdoc}
+     * @throws RuntimeException если получает ответ от Redis отличный от "-1", что означает произошла ощибка операции DEL
      */
     public function remove(string $key): void
     {
@@ -87,7 +93,7 @@ class CacheRedisFsocket implements CacheInterface
 
         $extracted = $this->extractNumber($result);
         if ($extracted === -1) {
-            throw new RuntimeException("Ошибка операции EXPIRE \"$result\"");
+            throw new RuntimeException("Ошибка операции DEL \"$result\"");
         }
     }
 
@@ -113,7 +119,7 @@ class CacheRedisFsocket implements CacheInterface
     }
 
     /**
-     * extract_number Конвертирует строковый ответ Redis в int
+     * Конвертирует строковый ответ Redis на выполненную операцию для последующего сравнения в int
      * @param  string $redisResult Статус Redis в ответ на операцию
      * @return int Ответ Redis (если может быть выражен в int)
      */
