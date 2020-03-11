@@ -16,8 +16,13 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function __construct(string $host, int $port, int $dbNumber)
     {
+        if ($dbNumber > 16) {
+            throw new RuntimeException("Максимальное число баз данных Redis 16. $dbNumber должно быть меньше 16")
+        }
         $this->connection = fsockopen($host, $port);
+        
         $result = $this->save(sprintf("SELECT \"%d\"\n", $dbNumber));
+
         $checkError = substr($result, 0, 4);
         if ($checkError === "-ERR") {
             throw new RuntimeException($result);
@@ -30,7 +35,7 @@ class CacheRedisFsocket implements CacheInterface
     public function set(string $key, $value, ?int $ttl = null): void
     {
         if ($ttl !== null && $ttl <= 0) {
-            throw new RuntimeException("Expected non-negative integer");
+            throw new RuntimeException("$ttl должно быть неотрицательным или null, если ключ бессрочный");
         }
 
         $safeKey = $this->correctView($key);
@@ -38,7 +43,7 @@ class CacheRedisFsocket implements CacheInterface
         $result = $this->save($command);
 
         if ($result !== "+OK\r\n") {
-            throw new RuntimeException($result);
+            throw new RuntimeException("Ошибка операции SET \"$result\"");
         }
 
         if ($ttl === null) {
@@ -49,7 +54,7 @@ class CacheRedisFsocket implements CacheInterface
         $ttlResult = $this->save($ttlCommand);
 
         if ($ttlResult !== ":1\r\n") {
-            throw new RuntimeException($ttlResult);
+            throw new RuntimeException("Ошибка операции EXPIRE \"$result\"");
         }
     }
 
@@ -61,6 +66,7 @@ class CacheRedisFsocket implements CacheInterface
         $safeKey = $this->correctView($key);
         $command = sprintf("GET \"%s\"\n", $safeKey);
         $result = $this->save($command);
+
         $extracted = $this->extractNumber($result);
         if ($extracted !== -1) {
             $serialized = fread($this->connection, $extracted);
@@ -78,14 +84,15 @@ class CacheRedisFsocket implements CacheInterface
         $safeKey = $this->correctView($key);
         $command = sprintf("DEL \"%s\"\n", $safeKey);
         $result = $this->save($command);
+
         $extracted = $this->extractNumber($result);
         if ($extracted === -1) {
-            throw new RuntimeException($result);
+            throw new RuntimeException("Ошибка операции EXPIRE \"$result\"");
         }
     }
 
     /**
-     * save Передаёт значение в Redis и возвращает ответ
+     * Передаёт значение в Redis и возвращает ответ Redis
      * @param  string $command Значение передаваемое в Redis
      * @return string Ответ Redis-а
      */
@@ -96,7 +103,7 @@ class CacheRedisFsocket implements CacheInterface
     }
 
     /**
-     * correctView Приводит строку к читаемому виду для Redis
+     * Экранирует пользовательские данные с целью безопасности
      * @param  mixed $command Пользовательские данные
      * @return string Конвертированные данные
      */
@@ -106,9 +113,9 @@ class CacheRedisFsocket implements CacheInterface
     }
 
     /**
-     * extract_number Конвертирует строку в integer
-     * @param  mixed $redisResult Статус Redis в string
-     * @return int Количество байт в integer
+     * extract_number Конвертирует строковый ответ Redis в int
+     * @param  string $redisResult Статус Redis в ответ на операцию
+     * @return int Ответ Redis (если может быть выражен в int)
      */
     private function extractNumber(string $redisResult): int
     {
