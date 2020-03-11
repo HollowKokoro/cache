@@ -29,12 +29,12 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
-        if ($ttl <= 0 && $ttl !== null) {
+        if ($ttl !== null && $ttl <= 0) {
             throw new RuntimeException("Expected non-negative integer");
         }
 
-        $keyModified = $this->correctView($key);
-        $command = sprintf("SET \"%s\" \"%s\"\n", $keyModified, $this->correctView(serialize($value)));
+        $safeKey = $this->correctView($key);
+        $command = sprintf("SET \"%s\" \"%s\"\n", $safeKey, $this->correctView(serialize($value)));
         $result = $this->save($command);
 
         if ($result !== "+OK\r\n") {
@@ -45,11 +45,11 @@ class CacheRedisFsocket implements CacheInterface
             return;
         }
         
-        $commandTtl = sprintf("EXPIRE \"%s\" %d\n", $keyModified, $ttl);
-        $resultTtl = $this->save($commandTtl);
+        $ttlCommand = sprintf("EXPIRE \"%s\" %d\n", $safeKey, $ttl);
+        $ttlResult = $this->save($ttlCommand);
 
-        if ($resultTtl !== ":1\r\n") {
-            throw new RuntimeException($resultTtl);
+        if ($ttlResult !== ":1\r\n") {
+            throw new RuntimeException($ttlResult);
         }
     }
 
@@ -58,8 +58,8 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        $keyModified = $this->correctView($key);
-        $command = sprintf("GET \"%s\"\n", $keyModified);
+        $safeKey = $this->correctView($key);
+        $command = sprintf("GET \"%s\"\n", $safeKey);
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
         if ($extracted !== -1) {
@@ -75,8 +75,8 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function remove(string $key): void
     {
-        $keyModified = $this->correctView($key);
-        $command = sprintf("DEL \"%s\"\n", $keyModified);
+        $safeKey = $this->correctView($key);
+        $command = sprintf("DEL \"%s\"\n", $safeKey);
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
         if ($extracted === -1) {
