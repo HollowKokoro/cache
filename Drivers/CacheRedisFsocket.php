@@ -13,13 +13,13 @@ class CacheRedisFsocket implements CacheInterface
      * @param  string $host Имя хоста
      * @param  int $port Номер порта
      * @param  int $dbNumber Индекс БД
-     * @throws RuntimeException если $dbNumber больше, чем максимальное число БД Redis, которое = 16
-     * @throws RuntimeException если получает ответ от Redis "-ERR", при подключении к выбранному номеру БД Redis
+     * @throws RuntimeException
+     * @throws RuntimeException
      */
     public function __construct(string $host, int $port, int $dbNumber)
     {
-        if ($dbNumber > 16) {
-            throw new RuntimeException("Максимальное число баз данных Redis 16. \"$dbNumber\" должно быть меньше 16");
+        if ($dbNumber > 16 && $dbNumber < 0) {
+            throw new RuntimeException("Максимальное число баз данных Redis 16. \"$dbNumber\" должно быть меньше 16 и больше 0");
         }
         $this->connection = fsockopen($host, $port);
         
@@ -33,9 +33,9 @@ class CacheRedisFsocket implements CacheInterface
 
     /**
      * {@inheritdoc}
-     * @throws RuntimeException если пользователт передаёт $ttl, который не равен null и меньше или равен 0
-     * @throws RuntimeException если получает ответ от Redis отличный от "+OK", что означает, произошла ошибка операции SET
-     * @throws RuntimeException если получает ответ от Redis отличный от ":1", что означает произошла ощибка операции EXPIRE
+     * @throws RuntimeException
+     * @throws RuntimeException
+     * @throws RuntimeException
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
@@ -48,7 +48,7 @@ class CacheRedisFsocket implements CacheInterface
         $result = $this->save($command);
 
         if ($result !== "+OK\r\n") {
-            throw new RuntimeException("Ошибка выполнения операции SET $result);
+            throw new RuntimeException("Ошибка выполнения операции SET $result");
         }
 
         if ($ttl === null) {
@@ -73,17 +73,19 @@ class CacheRedisFsocket implements CacheInterface
         $result = $this->save($command);
 
         $extracted = $this->extractNumber($result);
-        if ($extracted !== -1) {
-            $serialized = fread($this->connection, $extracted);
-            $data = unserialize($serialized);
-            return new ValueFound($data);
+        if ($extracted === -1) {
+            return new ValueNotFound();
         }
-        return new ValueNotFound();
+        $serialized = fread($this->connection, $extracted);
+        $data = unserialize($serialized);
+        return new ValueFound($data);
+        
+
     }
 
     /**
      * {@inheritdoc}
-     * @throws RuntimeException если получает ответ от Redis отличный от "-1", что означает произошла ощибка операции DEL
+     * @throws RuntimeException
      */
     public function remove(string $key): void
     {
