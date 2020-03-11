@@ -29,19 +29,17 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
-        if ($ttl <= 0) {
-            throw new RuntimeException("Expcted non-negative integer");
+        if ($ttl <= 0 || $ttl === null) {
+            throw new RuntimeException("Expected non-negative integer");
         }
-        $serialized = serialize($value);
-        $serializedNew = $this->replace($serialized);
-        $keyNew = $this->replace($key);
-        $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $serializedNew);  
-        $result = $this->save($command);    
+        $keyNew = $this->correctView($key);
+        $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $this->correctView(serialize($value)));
+        $result = $this->save($command);
         if ($result !== "+OK\r\n") {
             throw new RuntimeException($result);
         }
         if ($ttl === null) {
-            throw new RuntimeException($result);
+            return;
         }
         $commandTtl = sprintf("EXPIRE \"%s\" %d\n", $keyNew, $ttl);
         $resultTtl = $this->save($commandTtl);
@@ -55,7 +53,7 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        $keyNew = $this->replace($key);
+        $keyNew = $this->correctView($key);
         $command = sprintf("GET \"%s\"\n", $keyNew);
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
@@ -72,7 +70,7 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function remove(string $key): void
     {
-        $keyNew = $this->replace($key);
+        $keyNew = $this->correctView($key);
         $command = sprintf("DEL \"%s\"\n", $keyNew);
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
@@ -93,11 +91,11 @@ class CacheRedisFsocket implements CacheInterface
     }
 
     /**
-     * replace Приводит строку к читаемому виду для Redis
+     * correctView Приводит строку к читаемому виду для Redis
      * @param  mixed $command Пользовательские данные
      * @return string Конвертированные данные
      */
-    private function replace($command): string
+    private function correctView($command): string
     {
         return str_replace("\"", "\\\"", $command);
     }
@@ -110,15 +108,5 @@ class CacheRedisFsocket implements CacheInterface
     private function extractNumber(string $redisResult): int
     {
         return (int)str_replace(["$", "\r", "\n"], "", $redisResult);
-    }
-
-    /**
-     * expiration Присвает время жизни ключа
-     * @param string $key Ключ массива
-     * @param int $ttlSeconds Время жизни кюча в секундах
-     */
-    private function expiration(string $key, $ttl): void
-    {
-
     }
 }
