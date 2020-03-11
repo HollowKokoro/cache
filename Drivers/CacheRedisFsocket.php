@@ -29,12 +29,12 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function set(string $key, $value, ?int $ttl = null): void
     {
-        if ($ttl <= 0 || $ttl === null) {
+        if ($ttl <= 0 && $ttl !== null) {
             throw new RuntimeException("Expected non-negative integer");
         }
 
-        $keyNew = $this->correctView($key);
-        $command = sprintf("SET \"%s\" \"%s\"\n", $keyNew, $this->correctView(serialize($value)));
+        $keyModified = $this->correctView($key);
+        $command = sprintf("SET \"%s\" \"%s\"\n", $keyModified, $this->correctView(serialize($value)));
         $result = $this->save($command);
 
         if ($result !== "+OK\r\n") {
@@ -45,9 +45,9 @@ class CacheRedisFsocket implements CacheInterface
             return;
         }
         
-        $commandTtl = sprintf("EXPIRE \"%s\" %d\n", $keyNew, $ttl);
+        $commandTtl = sprintf("EXPIRE \"%s\" %d\n", $keyModified, $ttl);
         $resultTtl = $this->save($commandTtl);
-        
+
         if ($resultTtl !== ":1\r\n") {
             throw new RuntimeException($resultTtl);
         }
@@ -58,8 +58,8 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function get(string $key): ValueInterface
     {
-        $keyNew = $this->correctView($key);
-        $command = sprintf("GET \"%s\"\n", $keyNew);
+        $keyModified = $this->correctView($key);
+        $command = sprintf("GET \"%s\"\n", $keyModified);
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
         if ($extracted !== -1) {
@@ -75,8 +75,8 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function remove(string $key): void
     {
-        $keyNew = $this->correctView($key);
-        $command = sprintf("DEL \"%s\"\n", $keyNew);
+        $keyModified = $this->correctView($key);
+        $command = sprintf("DEL \"%s\"\n", $keyModified);
         $result = $this->save($command);
         $extracted = $this->extractNumber($result);
         if ($extracted === -1) {
