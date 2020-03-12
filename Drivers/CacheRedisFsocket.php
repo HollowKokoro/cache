@@ -14,7 +14,6 @@ class CacheRedisFsocket implements CacheInterface
      * @param  int $port Номер порта
      * @param  int $dbNumber Индекс БД
      * @throws RuntimeException
-     * @throws RuntimeException
      */
     public function __construct(string $host, int $port, int $dbNumber)
     {
@@ -33,8 +32,6 @@ class CacheRedisFsocket implements CacheInterface
 
     /**
      * {@inheritdoc}
-     * @throws RuntimeException
-     * @throws RuntimeException
      * @throws RuntimeException
      */
     public function set(string $key, $value, ?int $ttl = null): void
@@ -76,11 +73,10 @@ class CacheRedisFsocket implements CacheInterface
         if ($extracted === -1) {
             return new ValueNotFound();
         }
+
         $serialized = fread($this->connection, $extracted);
         $data = unserialize($serialized);
         return new ValueFound($data);
-        
-
     }
 
     /**
