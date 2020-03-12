@@ -121,7 +121,7 @@ class CacheRedisFsocket implements CacheInterface
     }
 
     /**
-     * Конвертирует строковый ответ Redis на выполненную операцию для последующего сравнения в int
+     * Конвертирует строковый ответ Redis в int, чтобы это было возможно сравнить со статусом ошибки
      * @param  string $redisResult Статус Redis в ответ на операцию
      * @return int Ответ Redis (если может быть выражен в int)
      */
