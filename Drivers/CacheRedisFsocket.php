@@ -18,8 +18,8 @@ class CacheRedisFsocket implements CacheInterface
      */
     public function __construct(string $host, int $port, int $dbNumber)
     {
-        if ($dbNumber > 16 && $dbNumber < 0) {
-            throw new RuntimeException("Максимальное число баз данных Redis 16. \"$dbNumber\" должно быть меньше 16 и больше 0");
+        if ($dbNumber > 16 || $dbNumber < 0) {
+            throw new RuntimeException("Максимальное число баз данных Redis 16. \$dbNumber должно быть меньше 16 и больше 0");
         }
         $this->connection = fsockopen($host, $port);
         
@@ -27,7 +27,7 @@ class CacheRedisFsocket implements CacheInterface
 
         $checkError = substr($result, 0, 4);
         if ($checkError === "-ERR") {
-            throw new RuntimeException("Ошибка подключения к БД под номером \"$result\"");
+            throw new RuntimeException("Ошибка подключения к БД под номером \$result");
         }
     }
 
@@ -40,7 +40,7 @@ class CacheRedisFsocket implements CacheInterface
     public function set(string $key, $value, ?int $ttl = null): void
     {
         if ($ttl !== null && $ttl <= 0) {
-            throw new RuntimeException("\"$ttl\" должно быть неотрицательным или null, если ключ бессрочный");
+            throw new RuntimeException("\$ttl должно быть неотрицательным или null, если ключ бессрочный");
         }
 
         $safeKey = $this->correctView($key);
@@ -112,10 +112,10 @@ class CacheRedisFsocket implements CacheInterface
 
     /**
      * Экранирует пользовательские данные с целью безопасности
-     * @param  mixed $command Пользовательские данные
+     * @param  string $command Пользовательские данные
      * @return string Конвертированные данные
      */
-    private function correctView($command): string
+    private function correctView(string $command): string
     {
         return str_replace("\"", "\\\"", $command);
     }
